@@ -68,7 +68,7 @@ RULES:
 export default function ChatBot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { role: "assistant", content: "Hey! I'm Virtual Urmi 👋 Ask me anything!" }
+    { role: "assistant", content: "Hi Urmi! I've updated my look. Since there is no API key yet, I am running in **Demo Mode**. How do I look?" }
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -76,92 +76,93 @@ export default function ChatBot() {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, loading]);
+  }, [messages]);
 
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
+    
     const userMsg = input.trim();
     setInput("");
     setMessages(prev => [...prev, { role: "user", content: userMsg }]);
     setLoading(true);
 
-    try {
-      const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `${URMI_CONTEXT}\nUser: ${userMsg}\nUrmi:`,
-      });
-      setMessages(prev => [...prev, { role: "assistant", content: typeof response === "string" ? response : JSON.stringify(response) }]);
-    } catch (error) {
-      setMessages(prev => [...prev, { role: "assistant", content: "Connection error. Please try again." }]);
-    } finally {
+    // DEMO MODE: This simulates an AI response since you don't have an API key yet
+    setTimeout(() => {
+      setMessages(prev => [...prev, { 
+        role: "assistant", 
+        content: "I'm currently in **Demo Mode** because no API key is detected. To make me smart, you'll need to add a Gemini or OpenAI key to your .env file!" 
+      }]);
       setLoading(false);
-    }
+    }, 1000);
   };
 
   return (
-    /* CRITICAL FIX: Ensure the outer div is NOT blocking clicks on the rest of the site */
-    <div className="fixed bottom-0 right-0 w-auto h-auto z-[9999] p-6 pointer-events-none">
+    /* wrapper: w-auto ensures it doesn't block the whole screen */
+    <div className="fixed bottom-0 right-0 w-auto h-auto z-[9999] p-4 md:p-6 pointer-events-none">
       
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 50, scale: 0.9 }}
-            /* pointer-events-auto ensures ONLY the chat window catches clicks */
-            className="pointer-events-auto mb-4 w-[90vw] max-w-[400px] h-[600px] overflow-hidden rounded-3xl border border-white/10 shadow-2xl flex flex-col relative bg-[#0a0a0f]"
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            className="pointer-events-auto mb-4 w-[90vw] max-w-[380px] h-[550px] overflow-hidden rounded-3xl border border-white/20 shadow-2xl flex flex-col bg-slate-900/95 backdrop-blur-xl"
           >
-            {/* --- ANIMATED BACKGROUND --- */}
-            <div className="absolute inset-0 z-0 opacity-20">
-               <motion.div 
-                 animate={{ scale: [1, 1.1, 1], x: [0, 20, 0] }} 
-                 transition={{ duration: 10, repeat: Infinity }}
-                 className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/30 to-transparent blur-3xl" 
-               />
-               <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0)', backgroundSize: '20px 20px' }} />
-            </div>
+            {/* PROFESSIONAL SQUARE GRID BACKGROUND */}
+            <div className="absolute inset-0 z-0 opacity-20 pointer-events-none" 
+                 style={{ backgroundImage: `linear-gradient(#ffffff10 1px, transparent 1px), linear-gradient(90deg, #ffffff10 1px, transparent 1px)`, backgroundSize: '20px 20px' }} 
+            />
 
             {/* Header */}
-            <div className="relative z-10 p-4 border-b border-white/10 bg-black/40 backdrop-blur-md flex items-center justify-between">
+            <div className="relative z-10 p-4 border-b border-white/10 bg-white/5 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="relative">
-                  <div className="w-10 h-10 rounded-full border border-primary/50 overflow-hidden">
-                    <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b0fd830c520e68e043e4d9/8aebf79f3_generated_b9d18692.png" alt="Avatar" />
+                  <div className="w-10 h-10 rounded-xl bg-primary/20 border border-primary/50 overflow-hidden">
+                    <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b0fd830c520e68e043e4d9/8aebf79f3_generated_b9d18692.png" alt="Avatar" className="object-cover" />
                   </div>
-                  {/* GREEN DOT */}
-                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-[#0a0a0f] shadow-[0_0_5px_#22c55e]"></div>
+                  {/* GREEN ACTIVE DOT */}
+                  <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-slate-900 shadow-[0_0_10px_#22c55e]"></span>
                 </div>
-                <span className="text-white font-bold text-sm">Virtual Urmi</span>
+                <div>
+                  <h3 className="text-white font-bold text-sm tracking-tight">Virtual Urmi</h3>
+                  <p className="text-[10px] text-green-400 font-medium uppercase tracking-widest">Online</p>
+                </div>
               </div>
-              <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="text-white/50 hover:text-white">
-                <X size={18} />
+              <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="text-white/40 hover:text-white rounded-full">
+                <X size={20} />
               </Button>
             </div>
 
-            {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 relative z-10 custom-scrollbar">
+            {/* Message Area */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-6 relative z-10 custom-scrollbar">
               {messages.map((msg, i) => (
-                <div key={i} className={`flex gap-2 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}>
-                  {/* CHAT ICONS */}
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border ${msg.role === "user" ? "bg-accent/20 border-accent/30" : "bg-primary/20 border-primary/30"}`}>
-                    {msg.role === "user" ? <User size={14} className="text-accent" /> : <Bot size={14} className="text-primary" />}
+                <div key={i} className={`flex items-end gap-2 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}>
+                  {/* ROLE ICONS */}
+                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border ${msg.role === "user" ? "bg-purple-500/20 border-purple-500/40" : "bg-primary/20 border-primary/40"}`}>
+                    {msg.role === "user" ? <User size={14} className="text-purple-400" /> : <Bot size={14} className="text-primary" />}
                   </div>
-                  <div className={`max-w-[80%] p-3 rounded-2xl text-sm ${msg.role === "user" ? "bg-primary text-white rounded-tr-none" : "bg-white/10 text-slate-100 rounded-tl-none border border-white/10"}`}>
-                    <ReactMarkdown className="prose prose-invert prose-sm leading-tight">{msg.content}</ReactMarkdown>
+                  
+                  <div className={`max-w-[80%] p-3 rounded-2xl text-[13px] shadow-sm ${
+                    msg.role === "user" 
+                    ? "bg-primary text-white rounded-br-none" 
+                    : "bg-white/10 text-slate-100 border border-white/10 rounded-bl-none"
+                  }`}>
+                    <ReactMarkdown className="prose prose-invert prose-sm">{msg.content}</ReactMarkdown>
                   </div>
                 </div>
               ))}
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input */}
-            <form onSubmit={(e) => { e.preventDefault(); sendMessage(); }} className="p-4 bg-black/60 border-t border-white/10 relative z-10 flex gap-2">
+            {/* Input Area */}
+            <form onSubmit={(e) => { e.preventDefault(); sendMessage(); }} className="p-4 bg-white/5 border-t border-white/10 flex gap-2 z-10">
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask me anything..."
-                className="bg-white/5 border-white/10 text-white"
+                placeholder="Ask me something..."
+                className="bg-black/20 border-white/10 text-white rounded-xl placeholder:text-slate-500"
               />
-              <Button type="submit" className="bg-primary hover:bg-primary/80">
+              <Button type="submit" disabled={!input.trim()} className="bg-primary hover:bg-primary/80 rounded-xl shrink-0">
                 <Send size={16} />
               </Button>
             </form>
@@ -169,15 +170,20 @@ export default function ChatBot() {
         )}
       </AnimatePresence>
 
-      {/* Launcher */}
+      {/* Launcher Button */}
       {!isOpen && (
         <motion.button
           layoutId="chat-toggle"
           onClick={() => setIsOpen(true)}
-          className="pointer-events-auto w-16 h-16 rounded-2xl overflow-hidden shadow-2xl border-2 border-primary/50 relative"
+          className="pointer-events-auto w-16 h-16 rounded-2xl overflow-hidden shadow-2xl border-2 border-primary/50 bg-slate-900 group relative"
+          whileHover={{ scale: 1.05 }}
         >
-          <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b0fd830c520e68e043e4d9/8aebf79f3_generated_b9d18692.png" className="w-full h-full object-cover" />
-          <div className="absolute top-1 right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-black"></div>
+          <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b0fd830c520e68e043e4d9/8aebf79f3_generated_b9d18692.png" className="w-full h-full object-cover opacity-80 group-hover:opacity-100" />
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-primary/20">
+            <Sparkles className="text-white w-6 h-6" />
+          </div>
+          {/* GREEN DOT ON LAUNCHER */}
+          <span className="absolute top-1 right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-slate-900"></span>
         </motion.button>
       )}
     </div>
