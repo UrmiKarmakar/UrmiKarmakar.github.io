@@ -5,15 +5,14 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   // Change this to '/' for the primary urmikarmakar.github.io URL
   base: '/', 
-  
   logLevel: 'error',
   plugins: [
     base44({
       legacySDKImports: process.env.BASE44_LEGACY_SDK_IMPORTS === 'true',
-      hmrNotifier: true,
-      navigationNotifier: true,
-      analyticsTracker: true,
-      visualEditAgent: true
+      hmrNotifier: false,
+      navigationNotifier: false,
+      analyticsTracker: false,
+      visualEditAgent: false
     }),
     react(),
   ],
