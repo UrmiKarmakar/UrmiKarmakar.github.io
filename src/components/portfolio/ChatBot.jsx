@@ -105,19 +105,19 @@ export default function ChatBot() {
         prompt: `${URMI_CONTEXT}\n\nHistory:\n${conversationHistory}\nUser: ${userMsg}\nUrmi:`,
       });
 
-      // Ensure content is a string to avoid Type errors
       const contentString = typeof response === "string" ? response : JSON.stringify(response);
-      
       setMessages(prev => [...prev, { role: "assistant", content: contentString }]);
     } catch (error) {
-      setMessages(prev => [...prev, { role: "assistant", content: "Sorry, I'm having trouble connecting right now. Please try again!" }]);
+      setMessages(prev => [...prev, { role: "assistant", content: "Sorry, I'm having trouble connecting. Please try again!" }]);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end pointer-events-none">
+    /* FIXED OUTER WRAPPER: Ensures alignment stays on the right */
+    <div className="fixed bottom-0 right-0 w-full z-[9999] flex flex-col items-end p-6 pointer-events-none">
+      
       {/* Chat Window */}
       <AnimatePresence>
         {isOpen && (
@@ -136,31 +136,33 @@ export default function ChatBot() {
             {/* Header */}
             <div className="relative bg-gradient-to-r from-primary/20 to-accent/20 backdrop-blur-xl p-4 border-b border-primary/20 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="relative w-10 h-10 rounded-full border-2 border-primary/50 overflow-hidden">
+                <div className="relative w-10 h-10 rounded-full border-2 border-primary/50 overflow-hidden shrink-0">
                   <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b0fd830c520e68e043e4d9/8aebf79f3_generated_b9d18692.png" alt="Avatar" className="w-full h-full object-cover" />
                 </div>
                 <div>
                   <h3 className="text-sm font-bold flex items-center gap-1.5 text-white">
                     Virtual Urmi <Bot className="w-3.5 h-3.5 text-primary" />
                   </h3>
-                  <span className="text-[10px] text-green-400 animate-pulse">● Online</span>
+                  <span className="text-[10px] text-green-400 animate-pulse flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 bg-green-400 rounded-full" /> Online
+                  </span>
                 </div>
               </div>
-              <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="h-8 w-8 text-white/70 hover:text-white hover:bg-white/10">
+              <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="h-8 w-8 text-white/70 hover:text-white hover:bg-white/10 shrink-0">
                 <X className="w-5 h-5" />
               </Button>
             </div>
 
             {/* Message Area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 relative custom-scrollbar">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 relative custom-scrollbar bg-transparent">
               {messages.map((msg, i) => (
                 <div key={i} className={`flex gap-2 ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                   <div className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-sm ${
                     msg.role === "user" 
-                    ? "bg-primary text-white rounded-tr-none" 
+                    ? "bg-primary text-white rounded-tr-none shadow-lg shadow-primary/20" 
                     : "bg-white/10 text-slate-100 backdrop-blur-md rounded-tl-none border border-white/5"
                   }`}>
-                    <ReactMarkdown className="prose prose-invert prose-sm">{msg.content}</ReactMarkdown>
+                    <ReactMarkdown className="prose prose-invert prose-sm leading-relaxed">{msg.content}</ReactMarkdown>
                   </div>
                 </div>
               ))}
@@ -175,16 +177,16 @@ export default function ChatBot() {
             </div>
 
             {/* Input Area */}
-            <form onSubmit={(e) => { e.preventDefault(); sendMessage(); }} className="p-3 bg-slate-900/50 border-t border-primary/20 backdrop-blur-md flex gap-2">
+            <form onSubmit={(e) => { e.preventDefault(); sendMessage(); }} className="p-3 bg-slate-900/80 border-t border-primary/20 backdrop-blur-md flex gap-2">
               <Input
                 ref={inputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask me something..."
-                className="bg-slate-950/50 border-primary/20 text-white focus-visible:ring-primary"
+                className="bg-slate-950/50 border-primary/20 text-white focus-visible:ring-primary h-10"
                 disabled={loading}
               />
-              <Button type="submit" size="icon" disabled={loading || !input.trim()} className="shrink-0 bg-primary hover:bg-primary/80">
+              <Button type="submit" size="icon" disabled={loading || !input.trim()} className="shrink-0 bg-primary hover:bg-primary/80 h-10 w-10">
                 <Send className="w-4 h-4" />
               </Button>
             </form>
@@ -200,18 +202,18 @@ export default function ChatBot() {
               <motion.button
                 layoutId="chat-toggle"
                 onClick={() => setIsOpen(true)}
-                className="pointer-events-auto w-16 h-16 rounded-2xl overflow-hidden shadow-2xl border-2 border-primary/50 bg-slate-900 group relative"
+                className="pointer-events-auto w-16 h-16 rounded-2xl overflow-hidden shadow-2xl border-2 border-primary/50 bg-slate-900 group relative flex items-center justify-center shrink-0"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b0fd830c520e68e043e4d9/8aebf79f3_generated_b9d18692.png" alt="Chat" className="w-full h-full object-cover transition-opacity group-hover:opacity-80" />
+                <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b0fd830c520e68e043e4d9/8aebf79f3_generated_b9d18692.png" alt="Chat" className="w-full h-full object-cover transition-all group-hover:scale-110" />
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-primary/20">
                   <Sparkles className="text-white w-6 h-6" />
                 </div>
               </motion.button>
             </TooltipTrigger>
-            <TooltipContent side="left" className="mb-2">
-              <p>Chat with Virtual Urmi</p>
+            <TooltipContent side="left" className="mb-2 mr-2 bg-slate-900 border-primary/30 text-white">
+              <p className="text-xs font-medium">Chat with Virtual Urmi</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
