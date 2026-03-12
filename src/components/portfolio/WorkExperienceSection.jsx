@@ -66,43 +66,32 @@ export default function WorkExperienceSection() {
               transition={{ delay: i * 0.15 }}
               className="glass rounded-xl overflow-hidden neon-border group hover:glow-purple-sm transition-all duration-500"
             >
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
-                <div className="relative h-48 md:h-auto overflow-hidden">
-                  <img
-                    src={exp.image}
-                    alt={exp.company}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-card via-card/50 to-transparent" />
+              <div className="p-6">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h3 className="font-bold text-foreground text-lg mb-1">{exp.title}</h3>
+                    <p className="text-sm text-primary font-mono">{exp.company}</p>
+                  </div>
+                  <span className="text-xs font-mono text-muted-foreground bg-muted px-3 py-1 rounded-full whitespace-nowrap">
+                    {exp.period}
+                  </span>
                 </div>
 
-                <div className="md:col-span-2 p-6">
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <h3 className="font-bold text-foreground text-lg mb-1">{exp.title}</h3>
-                      <p className="text-sm text-primary font-mono">{exp.company}</p>
-                    </div>
-                    <span className="text-xs font-mono text-muted-foreground bg-muted px-3 py-1 rounded-full whitespace-nowrap">
-                      {exp.period}
-                    </span>
+                <div className="flex items-center gap-4 mb-4 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5" />
+                    {exp.location}
                   </div>
-
-                  <div className="flex items-center gap-4 mb-4 text-xs text-muted-foreground">
-                    <div className="flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5" />
-                      {exp.location}
-                    </div>
-                  </div>
-
-                  <ul className="space-y-2">
-                    {exp.points.map((point, j) => (
-                      <li key={j} className="text-sm text-secondary-foreground flex items-start gap-2.5">
-                        <span className="text-primary mt-1.5 text-xs flex-shrink-0">▸</span>
-                        <span className="leading-relaxed">{point}</span>
-                      </li>
-                    ))}
-                  </ul>
                 </div>
+
+                <ul className="space-y-2">
+                  {exp.points.map((point, j) => (
+                    <li key={j} className="text-sm text-secondary-foreground flex items-start gap-2.5">
+                      <span className="text-primary mt-1.5 text-xs flex-shrink-0">▸</span>
+                      <span className="leading-relaxed">{point}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </motion.div>
           ))}

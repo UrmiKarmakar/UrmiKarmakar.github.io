@@ -92,8 +92,30 @@ export default function CertificatesSection() {
   const [modalData, setModalData] = useState(null);
 
   return (
-    <section id="Certificates" className="py-24 px-4 sm:px-6 relative">
+    <section id="Certificates" className="py-24 px-4 sm:px-6 relative overflow-hidden">
       <div className="absolute bottom-0 left-1/4 w-80 h-80 bg-primary/5 rounded-full blur-3xl" />
+      
+      {/* Floating graphics */}
+      <div className="absolute inset-0 pointer-events-none opacity-20">
+        <motion.div
+          animate={{ rotate: [0, 360], y: [0, -25, 0] }}
+          transition={{ duration: 24, repeat: Infinity, ease: "linear" }}
+          className="absolute top-20 left-16 w-16 h-16 border border-violet-500/25 rounded-lg"
+          style={{ transform: "rotate(45deg)" }}
+        />
+        <motion.div
+          animate={{ x: [-12, 12, -12], y: [0, 20, 0] }}
+          transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-24 right-20 w-12 h-12 border-2 border-cyan-500/20"
+          style={{ clipPath: "polygon(50% 0%, 100% 100%, 0% 100%)" }}
+        />
+        <motion.div
+          animate={{ scale: [1, 1.35, 1], opacity: [0.15, 0.3, 0.15] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-1/2 right-1/4 w-22 h-22 bg-gradient-to-br from-accent/10 to-transparent rounded-full"
+        />
+      </div>
+      
       <div className="max-w-6xl mx-auto relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}

@@ -29,49 +29,113 @@ export default function HeroSection() {
 
   return (
     <section id="Home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Animated gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-primary/5" />
+      {/* Gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-primary/5 to-background" />
       
-      {/* Animated grid */}
-      <div className="absolute inset-0 grid-bg opacity-40" />
+      {/* Subtle grid */}
+      <div className="absolute inset-0 grid-bg opacity-30" />
       
-      {/* Floating particles */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-[10%] w-2 h-2 bg-primary/40 rounded-full animate-pulse" />
-        <div className="absolute top-40 right-[15%] w-1.5 h-1.5 bg-accent/40 rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute bottom-32 left-[20%] w-1 h-1 bg-primary/30 rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
-        <div className="absolute top-1/3 right-[25%] w-1.5 h-1.5 bg-violet-400/40 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
+      {/* Geometric pattern */}
+      <div className="absolute inset-0 overflow-hidden opacity-20">
+        {[...Array(12)].map((_, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0.1 }}
+            animate={{ 
+              opacity: [0.1, 0.3, 0.1],
+              scale: [1, 1.1, 1]
+            }}
+            transition={{ 
+              duration: 4 + i * 0.3,
+              repeat: Infinity,
+              delay: i * 0.2 
+            }}
+            className="absolute border border-primary/30"
+            style={{
+              width: `${60 + i * 20}px`,
+              height: `${60 + i * 20}px`,
+              top: `${Math.random() * 80}%`,
+              left: `${Math.random() * 80}%`,
+              borderRadius: i % 3 === 0 ? '50%' : '8px',
+              transform: `rotate(${i * 15}deg)`
+            }}
+          />
+        ))}
       </div>
       
-      {/* Gradient orbs with animation */}
-      <motion.div 
-        animate={{ 
-          scale: [1, 1.2, 1],
-          opacity: [0.15, 0.25, 0.15]
-        }}
-        transition={{ duration: 8, repeat: Infinity }}
-        className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary rounded-full blur-3xl" 
-      />
-      <motion.div 
-        animate={{ 
-          scale: [1, 1.3, 1],
-          opacity: [0.1, 0.2, 0.1]
-        }}
-        transition={{ duration: 10, repeat: Infinity, delay: 1 }}
-        className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-accent rounded-full blur-3xl" 
-      />
-      <motion.div 
-        animate={{ 
-          scale: [1, 1.1, 1],
-          opacity: [0.05, 0.15, 0.05]
-        }}
-        transition={{ duration: 12, repeat: Infinity, delay: 2 }}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600 rounded-full blur-3xl" 
-      />
+      {/* Additional floating graphics */}
+      <div className="absolute inset-0 overflow-hidden">
+        <motion.div
+          animate={{
+            y: [0, -40, 0],
+            x: [0, 20, 0],
+            rotate: [0, 360],
+          }}
+          transition={{
+            duration: 22,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          className="absolute top-1/4 left-1/6 w-24 h-24 border-2 border-violet-500/20 rounded-lg"
+          style={{ transform: "rotate(25deg)" }}
+        />
+        <motion.div
+          animate={{
+            x: [-20, 20, -20],
+            rotate: [0, 180, 360],
+          }}
+          transition={{
+            duration: 16,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          className="absolute top-1/3 right-1/5 w-16 h-16 border-2 border-pink-500/25"
+          style={{ clipPath: "polygon(50% 0%, 100% 100%, 0% 100%)" }}
+        />
+        <motion.div
+          animate={{
+            scale: [1, 1.3, 1],
+            opacity: [0.15, 0.3, 0.15],
+            rotate: [0, -45, 0],
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          className="absolute bottom-1/3 left-1/3 w-20 h-20 bg-gradient-to-br from-cyan-500/15 to-transparent rounded-full"
+        />
+        <motion.div
+          animate={{
+            y: [0, 30, 0],
+            rotate: [-360, 0],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+          className="absolute top-2/3 right-1/3 w-28 h-28 border border-primary/20 rounded-full"
+        />
+        <motion.div
+          animate={{
+            x: [-15, 15, -15],
+            y: [0, -20, 0],
+          }}
+          transition={{
+            duration: 14,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          className="absolute bottom-1/4 right-1/5 w-14 h-14 border-2 border-accent/20"
+          style={{ clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)" }}
+        />
+      </div>
       
-      {/* Geometric shapes */}
-      <div className="absolute top-10 right-10 w-20 h-20 border border-primary/20 rounded-lg rotate-12 animate-pulse" />
-      <div className="absolute bottom-20 left-20 w-16 h-16 border border-accent/20 rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
+      {/* Gradient orbs */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl" />
+      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-accent/15 rounded-full blur-3xl" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/5 rounded-full blur-3xl" />
 
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center pt-20">
         <motion.div
@@ -88,7 +152,6 @@ export default function HeroSection() {
                 className="w-full h-full object-cover"
               />
             </div>
-            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-background" />
           </div>
         </motion.div>
 

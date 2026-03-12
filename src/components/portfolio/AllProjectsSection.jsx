@@ -126,8 +126,35 @@ const borderColors = {
 
 export default function AllProjectsSection() {
   return (
-    <section id="AllProjects" className="py-24 px-4 sm:px-6 relative">
+    <section id="AllProjects" className="py-24 px-4 sm:px-6 relative overflow-hidden">
       <div className="absolute top-1/3 right-0 w-80 h-80 bg-primary/5 rounded-full blur-3xl" />
+      
+      {/* Floating graphics */}
+      <div className="absolute inset-0 pointer-events-none opacity-20">
+        <motion.div
+          animate={{ y: [0, -30, 0], rotate: [0, 360] }}
+          transition={{ duration: 22, repeat: Infinity, ease: "linear" }}
+          className="absolute top-16 left-12 w-20 h-20 border border-primary/30 rounded-lg"
+          style={{ transform: "rotate(30deg)" }}
+        />
+        <motion.div
+          animate={{ x: [-20, 20, -20], y: [0, 15, 0] }}
+          transition={{ duration: 17, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-28 left-24 w-14 h-14 border-2 border-cyan-500/25 rounded-full"
+        />
+        <motion.div
+          animate={{ rotate: [0, -180, 0], scale: [1, 1.2, 1] }}
+          transition={{ duration: 19, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-1/3 right-20 w-16 h-16 border-2 border-pink-500/20"
+          style={{ clipPath: "polygon(50% 0%, 100% 100%, 0% 100%)" }}
+        />
+        <motion.div
+          animate={{ scale: [1, 1.3, 1], opacity: [0.15, 0.35, 0.15] }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-1/4 right-1/3 w-24 h-24 bg-gradient-to-br from-violet-500/10 to-transparent rounded-full"
+        />
+      </div>
+      
       <div className="max-w-6xl mx-auto relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -135,10 +162,10 @@ export default function AllProjectsSection() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <span className="font-mono text-primary text-sm mb-2 block">// all_projects</span>
-          <h2 className="text-3xl sm:text-4xl font-bold glow-text">Complete Portfolio</h2>
+          <span className="font-mono text-primary text-sm mb-2 block">// projects</span>
+          <h2 className="text-3xl sm:text-4xl font-bold glow-text">Featured Work</h2>
           <p className="text-muted-foreground mt-3 max-w-lg mx-auto text-sm">
-            All my projects from GitHub — AI/ML, Data Science & Backend Engineering
+            AI, ML, and Backend Engineering projects from GitHub
           </p>
         </motion.div>
 

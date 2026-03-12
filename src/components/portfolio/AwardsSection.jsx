@@ -16,6 +16,17 @@ const AWARDS = [
     ]
   },
   {
+    icon: Star,
+    title: "Magna Cum Laude (Silver Medals)",
+    org: "Academic Honors and Awards",
+    detail: "CGPA 3.85",
+    description: "Graduated with high honors, earning Magna Cum Laude distinction with a cumulative GPA of 3.85, demonstrating consistent academic excellence.",
+    images: [
+      "https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?w=600&q=80",
+      "https://images.unsplash.com/photo-1519834785169-98be25ec3f84?w=600&q=80"
+    ]
+  },
+  {
     icon: Users,
     title: "General Secretary",
     org: "AIUB Community of Engineering Students (ACES)",
@@ -31,8 +42,29 @@ export default function AwardsSection() {
   const [modalData, setModalData] = useState(null);
 
   return (
-    <section id="Awards" className="py-24 px-4 sm:px-6 relative">
+    <section id="Awards" className="py-24 px-4 sm:px-6 relative overflow-hidden">
       <div className="absolute top-1/2 right-0 w-64 h-64 bg-accent/5 rounded-full blur-3xl" />
+      
+      {/* Floating graphics */}
+      <div className="absolute inset-0 pointer-events-none opacity-20">
+        <motion.div
+          animate={{ y: [0, 35, 0], rotate: [0, -180, 0] }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-28 right-16 w-18 h-18 border border-accent/25 rounded-full"
+        />
+        <motion.div
+          animate={{ x: [-18, 18, -18], rotate: [0, 90, 0] }}
+          transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-20 left-12 w-14 h-14 border-2 border-primary/20"
+          style={{ clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)" }}
+        />
+        <motion.div
+          animate={{ scale: [1, 1.25, 1], opacity: [0.2, 0.4, 0.2] }}
+          transition={{ duration: 13, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-1/3 left-1/4 w-20 h-20 bg-gradient-to-br from-pink-500/10 to-transparent rounded-lg"
+        />
+      </div>
+      
       <div className="max-w-5xl mx-auto relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}

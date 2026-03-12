@@ -56,21 +56,12 @@ export default function EducationSection() {
               transition={{ delay: i * 0.12 }}
               className="glass rounded-xl overflow-hidden neon-border group hover:glow-purple-sm transition-all duration-500"
             >
-              <div className="relative h-40 overflow-hidden">
-                <img
-                  src={edu.image}
-                  alt={edu.school}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-card via-card/80 to-transparent" />
-                <div className="absolute top-3 right-3">
-                  <div className="bg-primary/20 backdrop-blur-sm px-3 py-1 rounded-full border border-primary/30">
+              <div className="p-5">
+                <div className="mb-3">
+                  <div className="bg-primary/20 backdrop-blur-sm px-3 py-1 rounded-full border border-primary/30 inline-block">
                     <span className="text-xs font-mono font-bold text-primary">{edu.grade}</span>
                   </div>
                 </div>
-              </div>
-
-              <div className="p-5">
                 <div className="flex items-start gap-2 mb-3">
                   <GraduationCap className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
                   <div>

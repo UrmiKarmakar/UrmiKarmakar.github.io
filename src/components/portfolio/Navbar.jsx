@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Menu, X, Terminal } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const NAV_ITEMS = ["Home", "Skills", "Experience", "Education", "Projects", "Awards", "Extracurricular"];
+const NAV_ITEMS = ["Home", "Skills", "Experience", "Education", "AllProjects", "Awards", "Extracurricular"];
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);

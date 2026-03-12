@@ -4,7 +4,6 @@ import HeroSection from "../components/portfolio/HeroSection";
 import SkillsSection from "../components/portfolio/SkillsSection";
 import WorkExperienceSection from "../components/portfolio/WorkExperienceSection";
 import EducationSection from "../components/portfolio/EducationSection";
-import ProjectsSection from "../components/portfolio/ProjectsSection";
 import AllProjectsSection from "../components/portfolio/AllProjectsSection";
 import AwardsSection from "../components/portfolio/AwardsSection";
 import CertificatesSection from "../components/portfolio/CertificatesSection";
@@ -20,7 +19,6 @@ export default function Home() {
       <SkillsSection />
       <WorkExperienceSection />
       <EducationSection />
-      <ProjectsSection />
       <AllProjectsSection />
       <AwardsSection />
       <CertificatesSection />
