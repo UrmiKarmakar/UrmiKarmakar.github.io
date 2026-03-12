@@ -1,14 +1,17 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Send, Bot, Loader2, Sparkles, User } from "lucide-react";
+import { X, Send, Bot, User, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { base44 } from "@/api/base44Client";
 import ReactMarkdown from "react-markdown";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const URMI_CONTEXT = `You are "Virtual Urmi" — a personalized AI assistant for Urmi Karmakar. 
-Answer in first person. Be professional and concise. ONLY discuss Urmi's skills, projects, and education.
+// Initialize Gemini with your .env key
+const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
+
+const URMI_CONTEXT = `You are "Virtual Urmi", an AI assistant for Urmi Karmakar's portfolio. 
+Urmi is an AI & Backend Developer. Be professional, friendly, and concise. 
+Answer only about Urmi's skills, projects (like Pylot and Calm AI), and experience.
 
 Here is everything about Urmi:
 
@@ -68,7 +71,7 @@ RULES:
 export default function ChatBot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { role: "assistant", content: "Hi Urmi! I've updated my look. Since there is no API key yet, I am running in **Demo Mode**. How do I look?" }
+    { role: "assistant", content: "Hi! I'm Virtual Urmi. How can I help you today?" }
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -86,83 +89,95 @@ export default function ChatBot() {
     setMessages(prev => [...prev, { role: "user", content: userMsg }]);
     setLoading(true);
 
-    // DEMO MODE: This simulates an AI response since you don't have an API key yet
-    setTimeout(() => {
-      setMessages(prev => [...prev, { 
-        role: "assistant", 
-        content: "I'm currently in **Demo Mode** because no API key is detected. To make me smart, you'll need to add a Gemini or OpenAI key to your .env file!" 
-      }]);
+    try {
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const prompt = `${URMI_CONTEXT}\n\nUser: ${userMsg}\nAssistant:`;
+      
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
+
+      setMessages(prev => [...prev, { role: "assistant", content: text }]);
+    } catch (error) {
+      console.error("Gemini Error:", error);
+      setMessages(prev => [...prev, { role: "assistant", content: "I'm having trouble connecting to my brain. Please check the API key!" }]);
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
-    /* wrapper: w-auto ensures it doesn't block the whole screen */
     <div className="fixed bottom-0 right-0 w-auto h-auto z-[9999] p-4 md:p-6 pointer-events-none">
-      
       <AnimatePresence>
         {isOpen && (
           <motion.div
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="pointer-events-auto mb-4 w-[90vw] max-w-[380px] h-[550px] overflow-hidden rounded-3xl border border-white/20 shadow-2xl flex flex-col bg-slate-900/95 backdrop-blur-xl"
+            className="pointer-events-auto mb-4 w-[90vw] max-w-[380px] h-[550px] overflow-hidden rounded-3xl border border-slate-200 shadow-2xl flex flex-col bg-white/90 backdrop-blur-xl"
           >
             {/* PROFESSIONAL SQUARE GRID BACKGROUND */}
-            <div className="absolute inset-0 z-0 opacity-20 pointer-events-none" 
-                 style={{ backgroundImage: `linear-gradient(#ffffff10 1px, transparent 1px), linear-gradient(90deg, #ffffff10 1px, transparent 1px)`, backgroundSize: '20px 20px' }} 
+            <div className="absolute inset-0 z-0 opacity-40 pointer-events-none" 
+                 style={{ backgroundImage: `linear-gradient(#e2e8f0 1px, transparent 1px), linear-gradient(90deg, #e2e8f0 1px, transparent 1px)`, backgroundSize: '20px 20px' }} 
             />
 
             {/* Header */}
-            <div className="relative z-10 p-4 border-b border-white/10 bg-white/5 flex items-center justify-between">
+            <div className="relative z-10 p-4 border-b border-slate-200 bg-white/50 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="relative">
-                  <div className="w-10 h-10 rounded-xl bg-primary/20 border border-primary/50 overflow-hidden">
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 overflow-hidden">
                     <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b0fd830c520e68e043e4d9/8aebf79f3_generated_b9d18692.png" alt="Avatar" className="object-cover" />
                   </div>
                   {/* GREEN ACTIVE DOT */}
-                  <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-slate-900 shadow-[0_0_10px_#22c55e]"></span>
+                  <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white shadow-sm"></span>
                 </div>
                 <div>
-                  <h3 className="text-white font-bold text-sm tracking-tight">Virtual Urmi</h3>
-                  <p className="text-[10px] text-green-400 font-medium uppercase tracking-widest">Online</p>
+                  <h3 className="text-slate-900 font-bold text-sm tracking-tight">Virtual Urmi</h3>
+                  <p className="text-[10px] text-green-600 font-semibold uppercase tracking-widest">Online</p>
                 </div>
               </div>
-              <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="text-white/40 hover:text-white rounded-full">
+              <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="text-slate-400 hover:text-slate-600 rounded-full">
                 <X size={20} />
               </Button>
             </div>
 
             {/* Message Area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-6 relative z-10 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto p-4 space-y-6 relative z-10">
               {messages.map((msg, i) => (
-                <div key={i} className={`flex items-end gap-2 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}>
-                  {/* ROLE ICONS */}
-                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border ${msg.role === "user" ? "bg-purple-500/20 border-purple-500/40" : "bg-primary/20 border-primary/40"}`}>
-                    {msg.role === "user" ? <User size={14} className="text-purple-400" /> : <Bot size={14} className="text-primary" />}
+                <div key={i} className={`flex items-start gap-2 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}>
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border ${msg.role === "user" ? "bg-purple-100 border-purple-200" : "bg-blue-100 border-blue-200"}`}>
+                    {msg.role === "user" ? <User size={14} className="text-purple-600" /> : <Bot size={14} className="text-blue-600" />}
                   </div>
                   
                   <div className={`max-w-[80%] p-3 rounded-2xl text-[13px] shadow-sm ${
                     msg.role === "user" 
-                    ? "bg-primary text-white rounded-br-none" 
-                    : "bg-white/10 text-slate-100 border border-white/10 rounded-bl-none"
+                    ? "bg-slate-900 text-white rounded-tr-none" 
+                    : "bg-white text-slate-700 border border-slate-200 rounded-tl-none"
                   }`}>
-                    <ReactMarkdown className="prose prose-invert prose-sm">{msg.content}</ReactMarkdown>
+                    <ReactMarkdown className="prose prose-sm prose-slate">{msg.content}</ReactMarkdown>
                   </div>
                 </div>
               ))}
+              {loading && (
+                <div className="flex gap-2">
+                   <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center">
+                    <span className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-bounce"></span>
+                  </div>
+                </div>
+              )}
               <div ref={messagesEndRef} />
             </div>
 
             {/* Input Area */}
-            <form onSubmit={(e) => { e.preventDefault(); sendMessage(); }} className="p-4 bg-white/5 border-t border-white/10 flex gap-2 z-10">
+            <form onSubmit={(e) => { e.preventDefault(); sendMessage(); }} className="p-4 bg-white/80 border-t border-slate-200 flex gap-2 z-10">
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask me something..."
-                className="bg-black/20 border-white/10 text-white rounded-xl placeholder:text-slate-500"
+                className="bg-slate-50 border-slate-200 text-slate-900 rounded-xl"
+                disabled={loading}
               />
-              <Button type="submit" disabled={!input.trim()} className="bg-primary hover:bg-primary/80 rounded-xl shrink-0">
+              <Button type="submit" disabled={!input.trim() || loading} className="bg-slate-900 hover:bg-slate-800 rounded-xl shrink-0">
                 <Send size={16} />
               </Button>
             </form>
@@ -175,15 +190,14 @@ export default function ChatBot() {
         <motion.button
           layoutId="chat-toggle"
           onClick={() => setIsOpen(true)}
-          className="pointer-events-auto w-16 h-16 rounded-2xl overflow-hidden shadow-2xl border-2 border-primary/50 bg-slate-900 group relative"
+          className="pointer-events-auto w-16 h-16 rounded-2xl overflow-hidden shadow-xl border border-slate-200 bg-white group relative"
           whileHover={{ scale: 1.05 }}
         >
-          <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b0fd830c520e68e043e4d9/8aebf79f3_generated_b9d18692.png" className="w-full h-full object-cover opacity-80 group-hover:opacity-100" />
-          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-primary/20">
-            <Sparkles className="text-white w-6 h-6" />
+          <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b0fd830c520e68e043e4d9/8aebf79f3_generated_b9d18692.png" className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0" />
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-white/40">
+            <Sparkles className="text-slate-900 w-6 h-6" />
           </div>
-          {/* GREEN DOT ON LAUNCHER */}
-          <span className="absolute top-1 right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-slate-900"></span>
+          <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white shadow-sm"></span>
         </motion.button>
       )}
     </div>
