@@ -1,14 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Send, User, Sparkles } from "lucide-react";
+import { X, Send, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import ReactMarkdown from "react-markdown";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// 1. Initialize API Safely
+// 1. Initialize API Safely (Vite requires VITE_ prefix)
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || ""; 
-
 const genAI = API_KEY ? new GoogleGenerativeAI(API_KEY) : null;
 
 const URMI_CONTEXT = `You are "Virtual Urmi", an AI assistant for Urmi Karmakar's portfolio. 
@@ -38,8 +37,7 @@ export default function ChatBot() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
-
-  // Ensure this image exists in your /public/images/ folder
+  
   const AVATAR_URL = "/images/UK_AI.png";
 
   useEffect(() => {
@@ -50,11 +48,14 @@ export default function ChatBot() {
     if (e) e.preventDefault();
     if (!input.trim() || loading) return;
 
+    // --- API AVAILABILITY CHECK ---
     if (!genAI) {
+      console.error("API Key is missing! Check your .env file for VITE_GEMINI_API_KEY");
       setMessages(prev => [...prev, 
         { role: "user", content: input.trim() },
-        { role: "assistant", content: "I'm currently offline. Please try again later!" }
+        { role: "assistant", content: "I'm having trouble connecting to my brain. Please ensure the API key is configured correctly!" }
       ]);
+      setInput("");
       return;
     }
 
@@ -64,6 +65,7 @@ export default function ChatBot() {
     setLoading(true);
 
     try {
+      // Using gemini-1.5-flash for better performance
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
       const fullPrompt = `${URMI_CONTEXT}\n\nUser: ${userMsg}\nAssistant:`;
 
@@ -74,13 +76,13 @@ export default function ChatBot() {
       console.error("Chatbot Error:", error);
       setMessages(prev => [...prev, { 
         role: "assistant", 
-        content: "I'm having trouble connecting to my brain right now. Please check your API key or connection!" 
+        content: "I'm experiencing some connectivity issues. Please try again in a moment!" 
       }]);
     } finally {
       setLoading(false);
     }
   };
-
+  
   return (
     <div className="fixed bottom-0 right-0 w-full md:w-auto h-auto z-[9999] p-4 md:p-6 pointer-events-none flex flex-col items-end">
       <style>{`
@@ -91,7 +93,7 @@ export default function ChatBot() {
         .water-bg {
           position: relative;
           background-color: #0f071a;
-          z-index: 1; /* Ensures container is the stack base */
+          z-index: 1;
         }
 
         .water-bg::before {
@@ -99,15 +101,15 @@ export default function ChatBot() {
           position: absolute;
           top: 50%;
           left: 50%;
-          transform: translate(-50%, -50%); /* This centers the avatar perfectly */
-          width: 280px; /* Adjust size so it's not "too big" */
+          transform: translate(-50%, -50%);
+          width: 280px;
           height: 280px;
           background-image: url(${AVATAR_URL});
           background-size: contain;
           background-position: center;
           background-repeat: no-repeat;
-          opacity: 0.15; /* Keeps it subtle so you can read the chat */
-          z-index: -1; /* This moves it BEHIND the messages */
+          opacity: 0.15;
+          z-index: -1;
           pointer-events: none;
         }
       `}</style>
@@ -146,7 +148,7 @@ export default function ChatBot() {
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border ${
                     msg.role === "user" ? "bg-purple-600/30 border-purple-400/40" : "bg-black/60 border-purple-500/40 overflow-hidden"
                   }`}>
-                    {msg.role === "user" ? <User size={14} className="text-purple-200" /> : <img src={AVATAR_URL} className="w-full h-full object-cover" />}
+                    {msg.role === "user" ? <User size={14} className="text-purple-200" /> : <img src={AVATAR_URL} className="w-full h-full object-cover" alt="AI" />}
                   </div>
                   
                   <div className={`max-w-[85%] p-3.5 rounded-2xl text-[13px] leading-relaxed shadow-sm ${
