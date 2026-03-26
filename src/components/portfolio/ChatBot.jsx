@@ -1,33 +1,9 @@
-import React, { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { X, Send, User } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import React, { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { X, Send, User } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
-// 1. Initialize API Safely (Vite requires VITE_ prefix)
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || ""; 
-const genAI = API_KEY ? new GoogleGenerativeAI(API_KEY) : null;
-
-const URMI_CONTEXT = `You are "Virtual Urmi", an AI assistant for Urmi Karmakar's portfolio. 
-Urmi is an AI & Backend Developer. Be professional, friendly, and concise. 
-Answer only about Urmi's skills, projects (like Pylot, Calm AI, and HandyConnect), and experience.
-
-USER INFO FOR CONTEXT:
-NAME: Urmi Karmakar
-ROLE: Jr. AI & Backend Developer at Sparktech IT Limited (Betopia Group)
-EDUCATION: BSc in CSE from AIUB (2022-2025), CGPA: 3.85
-SKILLS: Python, Django, FastAPI, TensorFlow, PyTorch, n8n, Docker, Flutter.
-PROJECTS: 
-- Pylot: AI-integrated task management app (FastAPI/Django/Supabase).
-- HandyConnect: Service marketplace with OTP/JWT auth.
-- Calm AI: Meditation app backend.
-- Thesis: Dual-Domain Segmentation Framework for Class Imbalance.
-
-RULES: 
-- ALWAYS be helpful and brief. 
-- If asked about unrelated topics, say: "I'd love to chat more, but I'm here to discuss Urmi's professional work!"`;
 
 export default function ChatBot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -48,35 +24,37 @@ export default function ChatBot() {
     if (e) e.preventDefault();
     if (!input.trim() || loading) return;
 
-    // --- API AVAILABILITY CHECK ---
-    if (!genAI) {
-      console.error("API Key is missing! Check your .env file for VITE_GEMINI_API_KEY");
-      setMessages(prev => [...prev, 
-        { role: "user", content: input.trim() },
-        { role: "assistant", content: "I'm having trouble connecting to my brain. Please ensure the API key is configured correctly!" }
-      ]);
-      setInput("");
-      return;
-    }
-
     const userMsg = input.trim();
     setInput("");
     setMessages(prev => [...prev, { role: "user", content: userMsg }]);
     setLoading(true);
 
     try {
-      // Using gemini-1.5-flash for better performance
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      const fullPrompt = `${URMI_CONTEXT}\n\nUser: ${userMsg}\nAssistant:`;
+      // 1. Update this URL to your live Render/Railway URL once deployed
+      // For local testing, use: "http://localhost:8000/chat"
+      const BACKEND_URL = "http://localhost:8000/chat";
 
-      const result = await model.generateContent(fullPrompt);
-      const response = await result.response;
-      setMessages(prev => [...prev, { role: "assistant", content: response.text() }]);
+      const response = await fetch(BACKEND_URL, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json" 
+        },
+        body: JSON.stringify({ message: userMsg }),
+      });
+
+      if (!response.ok) throw new Error("Backend connection failed");
+
+      const data = await response.json();
+      
+      setMessages(prev => [...prev, { 
+        role: "assistant", 
+        content: data.response 
+      }]);
     } catch (error) {
       console.error("Chatbot Error:", error);
       setMessages(prev => [...prev, { 
         role: "assistant", 
-        content: "I'm experiencing some connectivity issues. Please try again in a moment!" 
+        content: "I'm having trouble reaching my server right now. Please try again later!" 
       }]);
     } finally {
       setLoading(false);

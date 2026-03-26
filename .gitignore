@@ -1,26 +1,43 @@
-# --- Environment / Secrets ---
+# --- Environment / Secrets (CRITICAL: Never upload these) ---
 .env
 .env.local
 .env.*
 .env.*.local
-# Ignore specific build secrets that Vite might generate
 .env.production.local
 .env.development.local
 
-# --- Build & Output (CRITICAL: This stops the leak) ---
+# --- Build & Output (Prevents compiled JS/CSS from being public) ---
 dist/
 dist-ssr/
 build/
-assets/
 out/
-dist/assets
+# Ensure the assets folder inside dist is ignored during source push
+dist/assets/
+*.tsbuildinfo
 
-# If you are using GitHub Pages with a specific folder
-public/assets/
+# --- Python / FastAPI Backend ---
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+# If you use a local database for testing
+*.db
+*.sqlite3
 
 # --- Dependencies ---
 node_modules/
 jspm_packages/
+lib-cov/
+pids
+*.pid
+*.seed
+*.pid.lock
 
 # --- Logs ---
 logs
@@ -31,7 +48,7 @@ yarn-error.log*
 pnpm-debug.log*
 
 # --- Editor / IDE ---
-.vscode/*
+.vscode/
 !.vscode/extensions.json
 .idea/
 .DS_Store
@@ -40,5 +57,9 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+*.patch
 
-.vscode
+# --- OS Files ---
+Thumbs.db
+ehthumbs.db
+Desktop.ini
