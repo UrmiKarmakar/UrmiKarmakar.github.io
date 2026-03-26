@@ -1,0 +1,135 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-sans: 'Inter', sans-serif;
+
+    /* Shadcn / Tailwind HSL Variables */
+    --background: 230 25% 7%;
+    --foreground: 270 20% 95%;
+
+    --card: 230 25% 10%;
+    --card-foreground: 270 20% 95%;
+
+    --popover: 230 25% 10%;
+    --popover-foreground: 270 20% 95%;
+
+    --primary: 270 80% 65%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 230 30% 15%;
+    --secondary-foreground: 270 20% 90%;
+
+    --muted: 230 20% 14%;
+    --muted-foreground: 230 15% 55%;
+
+    --accent: 290 70% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 260 20% 18%;
+    --input: 260 20% 18%;
+    --ring: 270 80% 65%;
+
+    --radius: 0.75rem;
+
+    --chart-1: 270 80% 65%;
+    --chart-2: 290 70% 55%;
+    --chart-3: 220 70% 55%;
+    --chart-4: 310 70% 60%;
+    --chart-5: 250 60% 50%;
+  }
+
+  /* Note: If you don't have a light mode, you can remove the .dark class 
+     and just keep the values in :root to save space. */
+  .dark {
+    --background: 230 25% 7%;
+    --foreground: 270 20% 95%;
+    --primary: 270 80% 65%;
+    --ring: 270 80% 65%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+}
+
+/* --- UI Enhancements --- */
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: hsl(230, 25%, 7%);
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(270, 80%, 65%);
+  border-radius: 3px;
+}
+
+/* Glow effects */
+.glow-purple {
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.3), 0 0 60px rgba(168, 85, 247, 0.1);
+}
+.glow-purple-sm {
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.2), 0 0 30px rgba(168, 85, 247, 0.05);
+}
+.glow-text {
+  text-shadow: 0 0 20px rgba(168, 85, 247, 0.5), 0 0 40px rgba(168, 85, 247, 0.2);
+}
+
+/* Grid background - used for the main portfolio wrapper */
+.grid-bg {
+  background-image: 
+    linear-gradient(rgba(168, 85, 247, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(168, 85, 247, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Glass effect for cards and chatbot */
+.glass {
+  background: rgba(30, 27, 50, 0.75);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px); /* For Safari support */
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* --- Animations --- */
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+.cursor-blink {
+  animation: blink 1s infinite;
+}
+
+@keyframes neon-border {
+  0%, 100% { border-color: rgba(168, 85, 247, 0.3); }
+  50% { border-color: rgba(168, 85, 247, 0.6); }
+}
+.neon-border {
+  animation: neon-border 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
