@@ -27,9 +27,9 @@ app.add_middleware(
 )
 
 # 3. Configure Gemini AI
-# On Render, make sure GEMINI_API_KEY is added in the Environment variables
 api_key = os.getenv("GEMINI_API_KEY")
-genai.configure(api_key=api_key)
+if api_key:
+    genai.configure(api_key=api_key)
 
 class ChatRequest(BaseModel):
     message: str
@@ -62,6 +62,10 @@ Instructions:
 - Always refer to yourself as Urmi_AI.
 """
 
+@app.get("/")
+def home():
+    return {"status": "Urmi_AI Backend is running! ✨"}
+
 @app.post("/chat")
 async def chat_endpoint(request: ChatRequest):
     # 1. Immediate check: Is the API key even loaded?
@@ -70,25 +74,25 @@ async def chat_endpoint(request: ChatRequest):
         return {"response": "My API key is missing! Please check Render environment variables. ✨"}
 
     try:
-        # 2. Use the stable model name
-        model = genai.GenerativeModel("gemini-1.5-flash-latest")
+        # 2. Using Gemini 2.0 Flash for maximum reliability
+        model = genai.GenerativeModel("gemini-2.0-flash")
         
         full_prompt = f"{URMI_CONTEXT}\n\nUser: {request.message}\nUrmi_AI:"
         
-        # 3. Use a timeout or simple generation
+        # 3. Generate response
         response = model.generate_content(full_prompt)
         
-        # 4. Check if the response was blocked by safety filters
-        if not response.candidates or not response.candidates[0].content.parts:
-            print(f"⚠️ Response blocked or empty. Feedback: {response.prompt_feedback}")
+        # 4. Safety check for blocked or empty responses
+        if not response or not hasattr(response, 'text') or not response.text:
+            print(f"⚠️ Response issue. Feedback: {getattr(response, 'prompt_feedback', 'No feedback')}")
             return {"response": "I'm feeling a bit shy about that topic! Let's talk about tech instead. 💖"}
 
         return {"response": response.text}
         
     except Exception as e:
-        # This will now show the EXACT error in Render Logs
+        # This will now show the EXACT error in Render Logs for debugging
         print(f"❌ DETAILED ERROR: {type(e).__name__} - {str(e)}")
-        return {"response": "Oh no! My circuits are feeling a bit shy right now. ✨"}
+        return {"response": "Oh no! My circuits are feeling a bit shy right now. ✨ Try again in a second!"}
 
 if __name__ == "__main__":
     import uvicorn
