@@ -75,7 +75,7 @@ async def chat_endpoint(request: ChatRequest):
 
     try:
         # 2. Using Gemini 2.0 Flash for maximum reliability
-        model = genai.GenerativeModel("gemini-2.0-flash")
+        model = genai.GenerativeModel("gemini-1.5-flash")
         
         full_prompt = f"{URMI_CONTEXT}\n\nUser: {request.message}\nUrmi_AI:"
         
