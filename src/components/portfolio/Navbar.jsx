@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Menu, X, Terminal } from "lucide-react";
+import React, { useState, useEffect } from "react";
+/* Added UserCheck to the import list for the icon */
+import { Menu, X, Terminal, UserCheck } from "lucide-react"; 
 import { motion, AnimatePresence } from "framer-motion";
 
 const NAV_ITEMS = [
@@ -18,6 +19,9 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState("Home");
 
+  // Constant for AI Avatar URL to reuse across the app
+  const AI_AVATAR_URL = "/images/UK_AI.png"; 
+
   // Handle scroll for glass effect
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -25,7 +29,7 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Robust Intersection Observer
+  // Robust Intersection Observer for active section highlighting
   useEffect(() => {
     const observerOptions = {
       root: null,
@@ -54,7 +58,6 @@ export default function Navbar() {
   const scrollTo = (id) => {
     const element = document.getElementById(id);
     if (element) {
-      // Force active state immediately on click
       setActive(id);
       
       const offset = 80; // Navbar height offset
@@ -68,7 +71,7 @@ export default function Navbar() {
         behavior: "smooth"
       });
       
-      setIsOpen(false);
+      setIsOpen(false); // Close mobile menu after clicking
     }
   };
 
@@ -76,17 +79,41 @@ export default function Navbar() {
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? "glass border-b border-white/5 shadow-lg" : "bg-transparent"}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
+          
+          {/* Logo Section */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-2 cursor-pointer"
+            className="flex items-center gap-3 cursor-pointer"
             onClick={() => scrollTo("Home")}
           >
-            <Terminal className="w-5 h-5 text-primary" />
-            <span className="font-mono font-bold text-sm text-primary">urmi@dev</span>
-            <span className="text-muted-foreground font-mono text-sm">:~$</span>
+            {/* 🛠️ UPDATED: Added AI Avatar Logo with Online indicator */}
+            <div className="relative">
+              <div className="w-10 h-10 rounded-xl border border-purple-500/30 p-0.5 bg-black/40 overflow-hidden">
+                <img 
+                  src={AI_AVATAR_URL} 
+                  alt="Urmi AI Logo" 
+                  className="object-cover object-center w-full h-full scale-125 rounded-lg" 
+                />
+              </div>
+              {/* Pulsing online status indicator */}
+              <motion.div 
+                className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-[#0f071a] shadow-[0_0_10px_#22c55e] flex items-center justify-center"
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <UserCheck size={9} className="text-[#0f071a]" />
+              </motion.div>
+            </div>
+            
+            {/* Terminal text */}
+            <div className="hidden sm:block">
+              <span className="font-mono font-bold text-sm text-primary">urmi@dev</span>
+              <span className="text-muted-foreground font-mono text-sm">:~$</span>
+            </div>
           </motion.div>
 
+          {/* Desktop Menu */}
           <div className="hidden lg:flex items-center gap-1">
             {NAV_ITEMS.map((item, i) => (
               <motion.button
@@ -113,15 +140,17 @@ export default function Navbar() {
             ))}
           </div>
 
+          {/* Mobile Toggle Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden p-2 text-muted-foreground hover:text-foreground"
+            className="lg:hidden p-2 text-muted-foreground hover:text-foreground focus:outline-none"
           >
             {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
       </div>
 
+      {/* Mobile Menu List */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -130,12 +159,12 @@ export default function Navbar() {
             exit={{ opacity: 0, height: 0 }}
             className="lg:hidden glass border-t border-white/5 overflow-hidden"
           >
-            <div className="px-4 py-4 space-y-1">
+            <div className="px-4 py-4 space-y-1 flex flex-col items-center">
               {NAV_ITEMS.map((item) => (
                 <button
                   key={item}
                   onClick={() => scrollTo(item)}
-                  className={`block w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                  className={`block w-full text-center px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                     active === item
                       ? "text-primary bg-primary/10 border-l-4 border-primary"
                       : "text-muted-foreground hover:text-foreground hover:bg-white/5"

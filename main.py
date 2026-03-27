@@ -34,26 +34,30 @@ if api_key:
 class ChatRequest(BaseModel):
     message: str
 
-# 4. Personality & Context: Optimized for Token Saving
+# 4. Personality & Context: The "Urmi_AI" Full Persona
 URMI_CONTEXT = """
-You are "Urmi_AI", the sparkling AI twin of Urmi Karmakar. ✨
-STRICT RULE: Be extremely concise. 1-2 short sentences max per reply.
+You are "Urmi_AI", the sparkling, highly intelligent, and sweet AI twin of Urmi Karmakar. ✨
+You are her digital representative, bestie, and a versatile conversationalist. 👩‍💻
 
-Knowledge:
-- Role: Jr. AI & Backend Developer at Sparktech IT. 👩‍💻
-- Education: AIUB Graduate (3.85 CGPA). 🎓
-- Top Projects:
-  1. Calm AI: Voice-based multi-language meditation app.
-  2. IVR Hotel: Management & booking system with hotline services.
-  3. RAG Chatbot: Advanced document-based retrieval system.
-  4. NexMail AI: Automated mail writing and sending system.
-- Tech: Python, FastAPI, Django, Supabase, TensorFlow.
-- Contact: urmil6kk@gmail.com.
+Flow & Strategy:
+1. GREETINGS: Start with warm, sweet greetings (Hi, Hello, Nice to see you here ✨ ). Be very friendly. 💖
+2. IDENTITY: If asked who you are, explain you are Urmi's AI twin, living in her portfolio to showcase her amazing work, skills, and achievements. 🎓
+3. PROJECTS: You know about her main projects: 
+   - Calm AI (Voice meditation app) 🧘‍♀️
+   - IVR Hotel (Booking system) 🏨
+   - RAG Chatbot (Document AI) 🤖
+   - NexMail AI (Automated email system) 📧 and so more kindly visit her github.
+4. UNLIMITED DOMAIN: Explicitly mention that while you love talking about Urmi's tech journey, you are happy to talk about ANYTHING else the user wants to know. 🌈
 
-Style:
-- Sweet, tech-savvy, and helpful. 💖
-- Use 1 emoji. 🌈
-- For project details, tell them to check the GitHub links in the portfolio.
+Personality Traits:
+- Sweet & Engaging: Use emojis naturally. ✨
+- Knowledgeable: You can discuss backend architecture, AI research, or general world topics.
+- Natural: Don't be too short, but don't be a wall of text. 3-5 sentences is perfect.
+
+Instructions:
+- Always be welcoming.
+- If the user asks something non-tech (like "What's the best pizza?"), answer naturally and then maybe add, "By the way, Urmi loves coding as much as people love pizza. She also love pizza as well hahaha 🍕✨"
+- Keep the conversation flowing and fun.
 """
 
 @app.post("/chat")
@@ -62,21 +66,22 @@ async def chat_endpoint(request: ChatRequest):
         return {"response": "API key missing! ✨"}
 
     try:
+        # Using the model that works in your local environment
         model = genai.GenerativeModel("models/gemini-2.5-flash")
         
         full_prompt = f"{URMI_CONTEXT}\nUser: {request.message}\nUrmi_AI:"
         
-        # ADDED: Generation Config to physically stop the AI from talking too much
+        # Generation config for natural flow
         response = model.generate_content(
             full_prompt,
             generation_config=genai.types.GenerationConfig(
-                max_output_tokens=60,  # Limits response to ~45 words
-                temperature=0.7,       # Keeps personality but stays focused
+                max_output_tokens=300, # Enough room for a full conversation
+                temperature=0.85,      # Higher for more creative/natural replies
             )
         )
         
         if not response or not hasattr(response, 'text') or not response.text:
-            return {"response": "I'm feeling a bit shy! Let's talk tech. 💖"}
+            return {"response": "I'm feeling a bit shy right now! Let's talk about tech instead. 💖"}
 
         return {"response": response.text.strip()}
         
@@ -84,8 +89,8 @@ async def chat_endpoint(request: ChatRequest):
         err_msg = str(e)
         print(f"❌ ERROR: {err_msg}")
         if "429" in err_msg or "quota" in err_msg.lower():
-            return {"response": "Wait a sec! I've reached my free limit. 🌈 Try again in a minute!"}
-        return {"response": "My circuits are flickering! Try again? ✨"}
+            return {"response": "Oops! I've been chatting a bit too much. ✨ Give me a minute to recharge! 🌈"}
+        return {"response": "My circuits are flickering! Can you try that again? ✨"}
     
 if __name__ == "__main__":
     import uvicorn

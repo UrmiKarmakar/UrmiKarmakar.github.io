@@ -47,13 +47,20 @@
     --chart-5: 250 60% 50%;
   }
 
-  /* Note: If you don't have a light mode, you can remove the .dark class 
-     and just keep the values in :root to save space. */
   .dark {
     --background: 230 25% 7%;
     --foreground: 270 20% 95%;
     --primary: 270 80% 65%;
     --ring: 270 80% 65%;
+  }
+
+  /* --- ADDED FOR NAVIGATION & MOBILE FLOW --- */
+  html, body {
+    scroll-behavior: smooth !important;
+    max-width: 100%;
+    overflow-x: hidden; /* Fixes "out of frame" issues */
+    position: relative;
+    touch-action: manipulation; /* Faster response to taps */
   }
 }
 
@@ -64,48 +71,65 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
   }
+  /* Ensure sections don't hide under the fixed Navbar */
+  section {
+    scroll-margin-top: 80px;
+    width: 100%;
+  }
 }
 
 /* --- UI Enhancements --- */
 
-/* Custom scrollbar */
+/* Custom scrollbar - Optimized for speed */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 4px; /* Slimmer for mobile feel */
 }
 ::-webkit-scrollbar-track {
   background: hsl(230, 25%, 7%);
 }
 ::-webkit-scrollbar-thumb {
   background: hsl(270, 80%, 65%);
-  border-radius: 3px;
+  border-radius: 10px;
 }
 
-/* Glow effects */
+/* Glow effects - Added hardware acceleration */
 .glow-purple {
-  box-shadow: 0 0 20px rgba(168, 85, 247, 0.3), 0 0 60px rgba(168, 85, 247, 0.1);
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
+  transform: translateZ(0); 
 }
 .glow-purple-sm {
-  box-shadow: 0 0 10px rgba(168, 85, 247, 0.2), 0 0 30px rgba(168, 85, 247, 0.05);
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
+  transform: translateZ(0);
 }
 .glow-text {
-  text-shadow: 0 0 20px rgba(168, 85, 247, 0.5), 0 0 40px rgba(168, 85, 247, 0.2);
+  text-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
 }
 
-/* Grid background - used for the main portfolio wrapper */
+/* Grid background - Hardware accelerated */
 .grid-bg {
   background-image: 
     linear-gradient(rgba(168, 85, 247, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(168, 85, 247, 0.03) 1px, transparent 1px);
   background-size: 60px 60px;
+  transform: translateZ(0);
 }
 
-/* Glass effect for cards and chatbot */
+/* Glass effect - Optimized for Mobile Blur Performance */
 .glass {
-  background: rgba(30, 27, 50, 0.75);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px); /* For Safari support */
+  background: rgba(30, 27, 50, 0.8);
+  backdrop-filter: blur(12px); /* Lower blur = Faster mobile rendering */
+  -webkit-backdrop-filter: blur(12px); 
   border: 1px solid rgba(168, 85, 247, 0.2);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* Chatbot Mobile Container Fix */
+.chatbot-window {
+  width: 92vw !important; /* Forces fit within mobile screen */
+  max-width: 400px;
+  right: 4vw !important;
+  bottom: 80px !important;
+  z-index: 9999;
 }
 
 /* --- Animations --- */
@@ -132,4 +156,10 @@
 }
 .animate-float {
   animation: float 3s ease-in-out infinite;
+  will-change: transform; /* Boosts speed */
+}
+
+/* Speed optimization for images */
+img {
+  content-visibility: auto;
 }
