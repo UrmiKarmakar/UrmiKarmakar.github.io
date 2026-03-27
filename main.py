@@ -15,7 +15,7 @@ app = FastAPI()
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "https://urmikarmakar.github.io",  # No trailing slash
+    "https://urmikarmakar.github.io",
 ]
 
 app.add_middleware(
@@ -64,24 +64,31 @@ Instructions:
 
 @app.post("/chat")
 async def chat_endpoint(request: ChatRequest):
+    # 1. Immediate check: Is the API key even loaded?
+    if not api_key:
+        print("❌ CRITICAL: GEMINI_API_KEY is missing from environment!")
+        return {"response": "My API key is missing! Please check Render environment variables. ✨"}
+
     try:
-        # Initializing the model
+        # 2. Use the stable model name
         model = genai.GenerativeModel("models/gemini-1.5-flash")
         
-        # Constructing the personality-driven prompt
         full_prompt = f"{URMI_CONTEXT}\n\nUser: {request.message}\nUrmi_AI:"
         
+        # 3. Use a timeout or simple generation
         response = model.generate_content(full_prompt)
         
-        if not response or not response.text:
-            raise ValueError("Empty response from the AI model.")
+        # 4. Check if the response was blocked by safety filters
+        if not response.candidates or not response.candidates[0].content.parts:
+            print(f"⚠️ Response blocked or empty. Feedback: {response.prompt_feedback}")
+            return {"response": "I'm feeling a bit shy about that topic! Let's talk about tech instead. 💖"}
 
         return {"response": response.text}
         
     except Exception as e:
-        print(f"❌ Backend Error: {str(e)}")
-        # A sweeter error message for the user
-        return {"response": "Oh no! My circuits are feeling a bit shy right now. ✨ Give me a moment to sparkle and try again!"}
+        # This will now show the EXACT error in Render Logs
+        print(f"❌ DETAILED ERROR: {type(e).__name__} - {str(e)}")
+        return {"response": "Oh no! My circuits are feeling a bit shy right now. ✨"}
 
 if __name__ == "__main__":
     import uvicorn
