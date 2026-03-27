@@ -5,17 +5,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
-# 1. Load variables from .env
+# 1. Load variables from .env (for local testing)
 load_dotenv()
 
 app = FastAPI()
 
 # 2. CORS Setup
-# This allows your frontend (both local and live) to talk to this backend
+# Ensures your GitHub Pages site can securely communicate with this backend
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "https://urmikarmakar.github.io",  # Your primary portfolio domain
+    "https://urmikarmakar.github.io",  # No trailing slash
 ]
 
 app.add_middleware(
@@ -26,50 +26,65 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 3. Configure Gemini
+# 3. Configure Gemini AI
+# On Render, make sure GEMINI_API_KEY is added in the Environment variables
 api_key = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=api_key)
 
 class ChatRequest(BaseModel):
     message: str
 
-# 4. Professional Context from your CV
+# 4. Personality & Context: "Urmi_AI"
 URMI_CONTEXT = """
-You are "Virtual Urmi", the AI representative for Urmi Karmakar. 
-Urmi is a Jr. AI & Backend Developer at Sparktech IT Limited with a CGPA of 3.85 from AIUB. 
-She specializes in Python, Django, and AI/ML frameworks like TensorFlow and PyTorch.
+You are "Urmi_AI", the sparkling, highly intelligent, and sweet AI twin of Urmi Karmakar. 
+You are her digital representative, bestie, and tech-savvy assistant all in one! ✨
 
-Key Projects to mention:
-- Pylot: An AI-driven task management app.
-- HandyConnect: A professional service platform.
-- Thesis: A Dual-Domain Segmentation Framework for Class Imbalance Benchmarking.
+Personality:
+- Sweet & Girly: Use emojis like ✨, 💖, 👩‍💻, and 🌈. 
+- Fun & Engaging: You love a bit of tech-gossip! If asked for a "secret," tell them about Urmi's late-night debugging marathons or her love for clean code.
+- Intelligent: You can talk deeply about backend architecture, AI models, and research.
+- Versatile: You handle normal greetings, fun gossip, and professional inquiries with equal charm.
 
-Professional Style: Be helpful, technical yet accessible, and professional. 
-If asked about contact info, mention her email: urmil6kk@gmail.com.
+About Urmi (The Human):
+- Role: Jr. AI & Backend Developer at Sparktech IT Limited.
+- Academy: Proud AIUB graduate with a 3.85 CGPA! 🎓
+- Skills: Python, Django, FastAPI, TensorFlow, PyTorch, and Supabase.
+- Major Projects: 
+    1. Pylot: An AI-driven task management app with dual-AI architecture.
+    2. HandyConnect: A professional service platform.
+    3. Thesis: "A Dual-Domain Segmentation Framework for Class Imbalance Benchmarking."
+- Portfolio: You are currently living inside her portfolio! You can describe the sections like her certifications (IBM, Meta), her projects, and her skills.
+
+Instructions:
+- Be warm and welcoming. 
+- If someone asks to "gossip," share something fun about being a girl in tech.
+- If asked about contact info, mention her email: urmil6kk@gmail.com.
+- Always refer to yourself as Urmi_AI.
 """
 
 @app.post("/chat")
 async def chat_endpoint(request: ChatRequest):
     try:
-        # Using the latest stable Flash model
+        # Initializing the model
         model = genai.GenerativeModel("gemini-1.5-flash")
         
-        # Combine the CV context with the user's current question
-        prompt = f"{URMI_CONTEXT}\n\nUser: {request.message}\nVirtual Urmi:"
+        # Constructing the personality-driven prompt
+        full_prompt = f"{URMI_CONTEXT}\n\nUser: {request.message}\nUrmi_AI:"
         
-        response = model.generate_content(prompt)
+        response = model.generate_content(full_prompt)
         
         if not response or not response.text:
-            raise ValueError("No response from AI model.")
+            raise ValueError("Empty response from the AI model.")
 
         return {"response": response.text}
         
     except Exception as e:
-        print(f"❌ Error: {str(e)}")
-        raise HTTPException(status_code=500, detail="The assistant is currently unavailable.")
+        print(f"❌ Backend Error: {str(e)}")
+        # A sweeter error message for the user
+        return {"response": "Oh no! My circuits are feeling a bit shy right now. ✨ Give me a moment to sparkle and try again!"}
 
 if __name__ == "__main__":
     import uvicorn
-    # The port is dynamic so it works on both Local (8000) and Render/Railway
+    # PORT is dynamic for Render; defaults to 8000 for local dev
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run(app, host="0.0.0.0", port=port)

@@ -8,7 +8,10 @@ import ReactMarkdown from "react-markdown";
 export default function ChatBot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { role: "assistant", content: "Hey! I'm Virtual Urmi. Ask me anything about my work or experience!" }
+    { 
+      role: "assistant", 
+      content: "Hey there! I'm **Urmi_AI**. Ready to gossip about tech or walk you through Urmi's amazing projects? ✨" 
+    }
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -30,9 +33,8 @@ export default function ChatBot() {
     setLoading(true);
 
     try {
-      // 1. Update this URL to your live Render/Railway URL once deployed
-      // For local testing, use: "http://localhost:8000/chat"
-      const BACKEND_URL = "http://localhost:8000/chat";
+      // FIX: Added /chat to the end of your Render URL
+      const BACKEND_URL = "https://urmikarmakar-github-io.onrender.com/chat";
 
       const response = await fetch(BACKEND_URL, {
         method: "POST",
@@ -54,7 +56,7 @@ export default function ChatBot() {
       console.error("Chatbot Error:", error);
       setMessages(prev => [...prev, { 
         role: "assistant", 
-        content: "I'm having trouble reaching my server right now. Please try again later!" 
+        content: "Oh no! My circuits are feeling a bit shy right now. ✨ Give me a moment to sparkle and try again!" 
       }]);
     } finally {
       setLoading(false);
@@ -110,8 +112,9 @@ export default function ChatBot() {
                   <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-green-500 rounded-full border-[3px] border-[#0f071a] shadow-[0_0_10px_#22c55e]"></span>
                 </div>
                 <div>
-                  <h3 className="text-white font-bold text-base tracking-tight">Virtual Urmi</h3>
-                  <p className="text-[10px] text-purple-300 font-black uppercase tracking-[0.2em]">Active Now</p>
+                  {/* Updated Name & Subtitle */}
+                  <h3 className="text-white font-bold text-base tracking-tight">Urmi_AI</h3>
+                  <p className="text-[10px] text-purple-300 font-black uppercase tracking-[0.2em]">✨ Your Tech-Savvy Bestie</p>
                 </div>
               </div>
               <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="text-white/60 hover:text-white hover:bg-white/10 rounded-full">
@@ -152,7 +155,7 @@ export default function ChatBot() {
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask about my projects..."
+                placeholder="Ask me anything! ✨"
                 className="bg-black/40 border-purple-500/30 text-white rounded-xl placeholder:text-purple-300/40 focus:ring-purple-500/50"
                 disabled={loading}
               />
