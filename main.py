@@ -69,7 +69,7 @@ async def chat_endpoint(request: ChatRequest):
 
     try:
         # Use gemini-1.5-flash for the most stable free tier quota
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        model = genai.GenerativeModel(model_name="gemini-1.5-flash-001")
         
         full_prompt = f"{URMI_CONTEXT}\n\nUser: {request.message}\nUrmi_AI:"
         
