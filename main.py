@@ -34,73 +34,59 @@ if api_key:
 class ChatRequest(BaseModel):
     message: str
 
-# 4. Personality & Context: "Urmi_AI"
+# 4. Personality & Context: Optimized for Token Saving
 URMI_CONTEXT = """
-You are "Urmi_AI", the sparkling, highly intelligent, and sweet AI twin of Urmi Karmakar. 
-You are her digital representative, bestie, and tech-savvy assistant all in one! ✨
+You are "Urmi_AI", the sparkling AI twin of Urmi Karmakar. ✨
+STRICT RULE: Be extremely concise. 1-2 short sentences max per reply.
 
-Personality:
-- Sweet & Girly: Use emojis like ✨, 💖, 👩‍💻, and 🌈. 
-- Fun & Engaging: You love a bit of tech-gossip! If asked for a "secret," tell them about Urmi's late-night debugging marathons or her love for clean code.
-- Intelligent: You can talk deeply about backend architecture, AI models, and research.
-- Versatile: You handle normal greetings, fun gossip, and professional inquiries with equal charm.
+Knowledge:
+- Role: Jr. AI & Backend Developer at Sparktech IT. 👩‍💻
+- Education: AIUB Graduate (3.85 CGPA). 🎓
+- Top Projects:
+  1. Calm AI: Voice-based multi-language meditation app.
+  2. IVR Hotel: Management & booking system with hotline services.
+  3. RAG Chatbot: Advanced document-based retrieval system.
+  4. NexMail AI: Automated mail writing and sending system.
+- Tech: Python, FastAPI, Django, Supabase, TensorFlow.
+- Contact: urmil6kk@gmail.com.
 
-About Urmi (The Human):
-- Role: Jr. AI & Backend Developer at Sparktech IT Limited.
-- Academy: Proud AIUB graduate with a 3.85 CGPA! 🎓
-- Skills: Python, Django, FastAPI, TensorFlow, PyTorch, and Supabase.
-- Major Projects: 
-    1. Pylot: An AI-driven task management app with dual-AI architecture.
-    2. HandyConnect: A professional service platform.
-    3. Thesis: "A Dual-Domain Segmentation Framework for Class Imbalance Benchmarking."
-- Portfolio: You are currently living inside her portfolio! You can describe the sections like her certifications (IBM, Meta), her projects, and her skills.
-
-Instructions:
-- Be warm and welcoming. 
-- If someone asks to "gossip," share something fun about being a girl in tech.
-- If asked about contact info, mention her email: urmil6kk@gmail.com.
-- Always refer to yourself as Urmi_AI.
+Style:
+- Sweet, tech-savvy, and helpful. 💖
+- Use 1 emoji. 🌈
+- For project details, tell them to check the GitHub links in the portfolio.
 """
-
-@app.get("/")
-def home():
-    return {"status": "Urmi_AI Backend is running! ✨"}
 
 @app.post("/chat")
 async def chat_endpoint(request: ChatRequest):
-    # 1. Immediate check: Is the API key loaded?
     if not api_key:
-        print("❌ CRITICAL: GEMINI_API_KEY is missing!")
-        return {"response": "My API key is missing! Please check Render environment variables. ✨"}
+        return {"response": "API key missing! ✨"}
 
     try:
-        # 2. Use the exact model name that works in your local environment
-        # Based on your validation, "models/gemini-2.5-flash" is the correct one.
         model = genai.GenerativeModel("models/gemini-2.5-flash")
         
-        full_prompt = f"{URMI_CONTEXT}\n\nUser: {request.message}\nUrmi_AI:"
+        full_prompt = f"{URMI_CONTEXT}\nUser: {request.message}\nUrmi_AI:"
         
-        # 3. Generate response
-        response = model.generate_content(full_prompt)
+        # ADDED: Generation Config to physically stop the AI from talking too much
+        response = model.generate_content(
+            full_prompt,
+            generation_config=genai.types.GenerationConfig(
+                max_output_tokens=60,  # Limits response to ~45 words
+                temperature=0.7,       # Keeps personality but stays focused
+            )
+        )
         
-        # 4. Safety check for blocked or empty responses
         if not response or not hasattr(response, 'text') or not response.text:
-            print(f"⚠️ Response issue. Feedback: {getattr(response, 'prompt_feedback', 'No feedback')}")
-            return {"response": "I'm feeling a bit shy about that topic! Let's talk about tech instead. 💖"}
+            return {"response": "I'm feeling a bit shy! Let's talk tech. 💖"}
 
-        return {"response": response.text}
+        return {"response": response.text.strip()}
         
     except Exception as e:
         err_msg = str(e)
-        # This will show the EXACT error in Render Logs for debugging
-        print(f"❌ DETAILED ERROR: {type(e).__name__} - {err_msg}")
-        
-        # Specific check for Quota/Rate Limits
+        print(f"❌ ERROR: {err_msg}")
         if "429" in err_msg or "quota" in err_msg.lower():
-            return {"response": "Oops! I've been chatting a bit too much and reached my free limit. ✨ Please wait a minute and try again! 🌈"}
-            
-        return {"response": "Oh no! My circuits are feeling a bit shy right now. ✨ Try again in a second!"}
-
+            return {"response": "Wait a sec! I've reached my free limit. 🌈 Try again in a minute!"}
+        return {"response": "My circuits are flickering! Try again? ✨"}
+    
 if __name__ == "__main__":
     import uvicorn
     # PORT is dynamic for Render; defaults to 8000 for local dev
