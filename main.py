@@ -71,8 +71,7 @@ async def chat_endpoint(request: ChatRequest):
 
     try:
         # 2. Use the stable model name
-        # Use the full versioned name to stop the 404
-        model = genai.GenerativeModel(model_name="gemini-1.5-flash-latest")
+        model = genai.GenerativeModel("gemini-1.5-flash")
         
         full_prompt = f"{URMI_CONTEXT}\n\nUser: {request.message}\nUrmi_AI:"
         
