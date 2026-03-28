@@ -5,6 +5,28 @@ import { X, Send, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 
+// Messenger-style sound URLs
+const SEND_SOUND = "https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3";
+const RECEIVE_SOUND = "https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3";
+
+const TypingIndicator = () => (
+  <div className="flex gap-1 px-3 py-2 bg-black/70 border border-purple-500/10 rounded-2xl rounded-tl-none w-fit backdrop-blur-sm">
+    {[0, 1, 2].map((dot) => (
+      <motion.div
+        key={dot}
+        className="w-1.5 h-1.5 bg-purple-400 rounded-full"
+        animate={{ y: [0, -5, 0] }}
+        transition={{
+          duration: 0.6,
+          repeat: Infinity,
+          delay: dot * 0.15,
+          ease: "easeInOut",
+        }}
+      />
+    ))}
+  </div>
+);
+
 export default function ChatBot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
@@ -15,36 +37,38 @@ export default function ChatBot() {
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [viewportHeight, setViewportHeight] = useState("100dvh"); // For Messenger typing fix
+  const [viewportHeight, setViewportHeight] = useState("100dvh");
   const messagesEndRef = useRef(null);
+  const sendAudio = useRef(null);
+  const receiveAudio = useRef(null);
   
   const AVATAR_URL = "/images/UK_AI.png";
 
-  // --- MESSENGER TYPING SYSTEM FIX ---
+  useEffect(() => {
+    sendAudio.current = new Audio(SEND_SOUND);
+    receiveAudio.current = new Audio(RECEIVE_SOUND);
+    sendAudio.current.volume = 0.3;
+    receiveAudio.current.volume = 0.4;
+  }, []);
+
   useEffect(() => {
     if (!isOpen) return;
-
     const handleVisualViewportChange = () => {
       if (window.visualViewport) {
-        // Dynamically adjust the height to exactly what is visible above the keyboard
         setViewportHeight(`${window.visualViewport.height}px`);
-        // Smoothly scroll to the latest message when keyboard pops up
         setTimeout(() => {
           messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
         }, 150);
       }
     };
-
     window.visualViewport?.addEventListener("resize", handleVisualViewportChange);
-    // Initial check
     handleVisualViewportChange();
-
     return () => window.visualViewport?.removeEventListener("resize", handleVisualViewportChange);
   }, [isOpen]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, loading]);
 
   const sendMessage = async (e) => {
     if (e) e.preventDefault();
@@ -52,6 +76,7 @@ export default function ChatBot() {
 
     const userMsg = input.trim();
     setInput("");
+    sendAudio.current?.play().catch(() => {});
     setMessages(prev => [...prev, { role: "user", content: userMsg }]);
     setLoading(true);
 
@@ -66,15 +91,13 @@ export default function ChatBot() {
       if (!response.ok) throw new Error("Backend connection failed");
       const data = await response.json();
       
-      setMessages(prev => [...prev, { 
-        role: "assistant", 
-        content: data.response 
-      }]);
+      receiveAudio.current?.play().catch(() => {});
+      setMessages(prev => [...prev, { role: "assistant", content: data.response }]);
     } catch (error) {
       console.error("Chatbot Error:", error);
       setMessages(prev => [...prev, { 
         role: "assistant", 
-        content: "My server is just waking up ✨ Give me about 30 seconds to warm up my circuits and try sending your message again." 
+        content: "My server is just waking up ✨ Give me about 30 seconds to warm up my circuits and try again." 
       }]);
     } finally {
       setLoading(false);
@@ -101,13 +124,13 @@ export default function ChatBot() {
           top: 50%;
           left: 50%;
           transform: translate(-50%, -50%);
-          width: 240px;
-          height: 240px;
+          width: 260px;
+          height: 260px;
           background-image: url(${AVATAR_URL});
           background-size: contain;
           background-position: center;
           background-repeat: no-repeat;
-          opacity: 0.12;
+          opacity: 0.25; /* Increased visibility as requested */
           z-index: -1;
           pointer-events: none;
         }
@@ -119,7 +142,7 @@ export default function ChatBot() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            style={{ height: viewportHeight }} // Key for Messenger-style layout
+            style={{ height: viewportHeight }}
             className="pointer-events-auto w-full md:w-[380px] md:h-[600px] md:mb-4 overflow-hidden md:rounded-[2.5rem] border-x border-t md:border border-purple-500/30 shadow-[0_0_40px_rgba(0,0,0,0.5)] flex flex-col water-bg backdrop-blur-lg"
           >
             {/* Header */}
@@ -129,7 +152,8 @@ export default function ChatBot() {
                   <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl border-2 border-purple-400/40 p-0.5 bg-black/40 overflow-hidden">
                     <img src={AVATAR_URL} alt="Urmi AI" className="object-cover object-center w-full h-full scale-125" />
                   </div>
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 border-2 border-[#0f071a] rounded-full z-10">
+                  {/* Small absolute top-right dot */}
+                  <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 border border-[#0f071a] rounded-full z-10">
                     <span className="absolute inset-0 rounded-full bg-green-400 animate-ping opacity-75"></span>
                   </span>
                 </div>
@@ -143,7 +167,7 @@ export default function ChatBot() {
               </Button>
             </div>
 
-            {/* Chat Body - flex-1 allows it to shrink when keyboard opens */}
+            {/* Chat Body */}
             <div className="flex-1 overflow-y-auto p-4 md:p-5 space-y-5 relative z-10 custom-scrollbar">
               {messages.map((msg, i) => (
                 <div key={i} className={`flex items-start gap-2.5 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}>
@@ -166,16 +190,19 @@ export default function ChatBot() {
                   </div>
                 </div>
               ))}
+              
               {loading && (
-                <div className="flex gap-3 animate-pulse">
-                  <div className="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-purple-500/10" />
-                  <div className="h-7 w-16 bg-purple-500/10 rounded-xl" />
+                <div className="flex items-start gap-2.5 flex-row">
+                   <div className="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-black/60 border border-purple-500/40 overflow-hidden shrink-0">
+                    <img src={AVATAR_URL} className="w-full h-full object-cover scale-125" alt="AI" />
+                  </div>
+                  <TypingIndicator />
                 </div>
               )}
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input Footer - Pinned to bottom of viewportHeight */}
+            {/* Input Footer */}
             <form onSubmit={sendMessage} className="p-3 md:p-4 bg-purple-950/40 border-t border-purple-500/10 backdrop-blur-md flex gap-2 z-10">
               <Input
                 value={input}
@@ -201,7 +228,8 @@ export default function ChatBot() {
           whileHover={{ scale: 1.1 }}
         >
           <img src={AVATAR_URL} className="w-full h-full object-cover scale-125 opacity-80" />
-          <span className="absolute top-1 right-1 w-4 h-4 bg-green-500 border-2 border-[#0f071a] rounded-full z-20">
+          {/* Small non-bothering dot in the absolute top-right */}
+          <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-green-500 border border-[#0f071a] rounded-full z-20">
             <span className="absolute inset-0 rounded-full bg-green-400 animate-ping opacity-75"></span>
           </span>
         </motion.button>
