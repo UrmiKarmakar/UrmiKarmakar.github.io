@@ -112,14 +112,6 @@ export default function ChatBot() {
                       className="object-cover object-center w-full h-full scale-125 rounded-lg md:rounded-xl" 
                     />
                   </div>
-                  {/* Status indicator with MessageSquare icon */}
-                  <motion.div 
-                    className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-[#0f071a] shadow-[0_0_10px_#22c55e] flex items-center justify-center"
-                    animate={{ scale: [1, 1.1, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >
-                    <MessageSquare size={10} className="text-[#0f071a]" />
-                  </motion.div>
                 </div>
                 <div>
                   <h3 className="text-white font-bold text-sm md:text-base tracking-tight">Urmi_AI</h3>
@@ -172,7 +164,7 @@ export default function ChatBot() {
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask me! ✨"
+                placeholder="Ask me about Urmi ✨"
                 className="bg-black/40 border-purple-500/20 text-white rounded-xl placeholder:text-purple-300/30 focus:ring-purple-500/40 h-10 md:h-11"
                 disabled={loading}
               />
@@ -200,15 +192,6 @@ export default function ChatBot() {
             className="w-full h-full object-cover object-center scale-125 opacity-80 group-hover:opacity-100 transition-all duration-300" 
           />
           <div className="absolute inset-0 bg-gradient-to-t from-purple-950/60 to-transparent" />
-          
-          {/* Status Indicator with Icon on the main button */}
-          <motion.div 
-            className="absolute top-1 right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-[#0f071a] z-20 flex items-center justify-center shadow-[0_0_10px_#22c55e]"
-            animate={{ scale: [1, 1.1, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            <MessageSquare size={10} className="text-[#0f071a]" />
-          </motion.div>
         </motion.button>
       )}
     </div>
