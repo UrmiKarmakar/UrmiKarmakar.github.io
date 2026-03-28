@@ -70,8 +70,7 @@ export default function ChatBot() {
   };
   
   return (
-    // Fixed: Added max-w-screen to ensure outer container doesn't block layout
-    <div className="fixed bottom-0 right-0 w-full md:w-auto h-auto z-[9999] p-3 md:p-6 pointer-events-none flex flex-col items-end max-w-full overflow-hidden">
+    <div className="fixed bottom-0 right-0 w-full md:w-auto h-auto z-[9999] p-3 md:p-6 pointer-events-none flex flex-col items-end">
       <style>{`
         .custom-scrollbar::-webkit-scrollbar { width: 3px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -79,9 +78,9 @@ export default function ChatBot() {
         .water-bg { position: relative; background-color: #0f071a; z-index: 1; }
         .water-bg::before {
           content: ""; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-          width: 250px; height: 250px; background-image: url(${AVATAR_URL});
+          width: 220px; height: 220px; background-image: url(${AVATAR_URL});
           background-size: contain; background-position: center; background-repeat: no-repeat;
-          opacity: 0.35; z-index: -1; pointer-events: none;
+          opacity: 0.25; z-index: -1; pointer-events: none;
         }
       `}</style>
       
@@ -92,18 +91,22 @@ export default function ChatBot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             style={{ height: viewportHeight }}
-            // Fixed: Added max-h-[90vh] for mobile safety so it doesn't cover top navbar
-            className="pointer-events-auto mb-2 md:mb-4 w-full md:w-[380px] md:h-[600px] max-h-[85vh] overflow-hidden rounded-t-[2rem] md:rounded-[2.5rem] border border-purple-500/30 shadow-2xl flex flex-col water-bg backdrop-blur-lg"
+            // Fixed height and max-width to prevent the "Too Long/Full Screen" issue
+            className="pointer-events-auto mb-2 md:mb-4 w-full md:w-[380px] md:h-[550px] max-h-[85vh] overflow-hidden rounded-[2rem] border border-purple-500/30 shadow-2xl flex flex-col water-bg backdrop-blur-lg"
           >
             {/* Header */}
-            <div className="p-4 border-b border-purple-500/20 bg-purple-950/40 backdrop-blur-md flex items-center justify-between">
+            <div className="p-4 border-b border-purple-500/20 bg-purple-950/40 backdrop-blur-md flex items-center justify-between shrink-0">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl border-2 border-purple-400/40 p-0.5 bg-black/40 overflow-hidden">
+                <div className="relative w-10 h-10 rounded-xl border-2 border-purple-400/40 p-0.5 bg-black/40 overflow-hidden">
                   <img src={AVATAR_URL} className="w-full h-full object-cover scale-125" alt="Urmi AI" />
                 </div>
-                <div>
-                  <h3 className="text-white font-bold text-sm tracking-tight">Urmi_AI</h3>
-                  <p className="text-[10px] text-purple-300 font-black uppercase tracking-widest">Online</p>
+                <div className="flex flex-col text-left">
+                  <h3 className="text-white font-bold text-sm tracking-tight leading-tight">Urmi_AI</h3>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    {/* Fixed: Restored Green Dot Indicator */}
+                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
+                    <span className="text-[10px] text-purple-300 font-black uppercase tracking-widest">Online</span>
+                  </div>
                 </div>
               </div>
               <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="text-white/60 hover:text-white">
@@ -120,31 +123,31 @@ export default function ChatBot() {
                   }`}>
                     {msg.role === "user" ? <User size={14} className="text-purple-200" /> : <img src={AVATAR_URL} className="w-full h-full object-cover scale-125" />}
                   </div>
-                  <div className={`max-w-[80%] p-3 rounded-2xl text-[13px] ${
-                    msg.role === "user" ? "bg-purple-600 text-white rounded-tr-none" : "bg-black/70 text-purple-50 border border-purple-500/10 rounded-tl-none"
+                  <div className={`max-w-[80%] p-3 rounded-2xl text-[13px] leading-relaxed ${
+                    msg.role === "user" ? "bg-purple-600 text-white rounded-tr-none" : "bg-black/70 text-purple-50 border border-purple-500/10 rounded-tl-none shadow-sm"
                   }`}>
                     <ReactMarkdown className="prose prose-invert prose-sm">{msg.content}</ReactMarkdown>
                   </div>
                 </div>
               ))}
               {loading && (
-                <div className="flex gap-2 items-center text-purple-300 text-xs pl-10 animate-pulse">
-                  <span>typing...</span>
+                <div className="flex gap-2 items-center text-purple-300 text-[10px] pl-10 animate-pulse font-mono uppercase">
+                  <span>Thinking...</span>
                 </div>
               )}
               <div ref={messagesEndRef} />
             </div>
 
             {/* Input */}
-            <form onSubmit={sendMessage} className="p-4 bg-purple-950/40 border-t border-purple-500/10 flex gap-2">
+            <form onSubmit={sendMessage} className="p-4 bg-purple-950/40 border-t border-purple-500/10 flex gap-2 shrink-0">
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Message Urmi_AI..."
-                className="bg-black/40 border-purple-500/20 text-white rounded-xl h-11"
+                className="bg-black/40 border-purple-500/20 text-white rounded-xl h-11 focus:border-purple-500/50"
                 disabled={loading}
               />
-              <Button type="submit" disabled={!input.trim() || loading} className="bg-purple-600 hover:bg-purple-500 px-4 h-11">
+              <Button type="submit" disabled={!input.trim() || loading} className="bg-purple-600 hover:bg-purple-500 px-4 h-11 transition-transform active:scale-95 shadow-lg shadow-purple-600/20">
                 <Send size={18} />
               </Button>
             </form>
@@ -156,8 +159,9 @@ export default function ChatBot() {
         <motion.button
           layoutId="chat-toggle"
           onClick={() => setIsOpen(true)}
-          className="pointer-events-auto w-16 h-16 rounded-2xl overflow-hidden shadow-xl border-2 border-purple-500/40 bg-[#0f071a]"
+          className="pointer-events-auto w-16 h-16 rounded-2xl overflow-hidden shadow-2xl border-2 border-purple-500/40 bg-[#0f071a]"
           whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
           <img src={AVATAR_URL} className="w-full h-full object-cover scale-125 opacity-90" />
         </motion.button>
