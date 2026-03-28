@@ -48,6 +48,8 @@ export default function ChatBot() {
     setMessages(prev => [...prev, { role: "user", content: userMsg }]);
     setLoading(true);
 
+    const [viewportHeight, setViewportHeight] = useState("auto");
+
     try {
       const response = await fetch("https://urmikarmakar-github-io.onrender.com/chat", {
         method: "POST",
