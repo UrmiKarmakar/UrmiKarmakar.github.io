@@ -11,7 +11,7 @@ export default function ChatBot() {
   const [messages, setMessages] = useState([
     { 
       role: "assistant", 
-      content: "Hey there! I'm **Urmi_AI**. Ready to gossip about tech or walk you through Urmi's amazing projects? ✨" 
+      content: "Hey I'm **Urmi_AI**. Ready to gossip about tech or walk you through Urmi's amazing portfolio? ✨" 
     }
   ]);
   const [input, setInput] = useState("");
@@ -52,7 +52,7 @@ export default function ChatBot() {
       console.error("Chatbot Error:", error);
       setMessages(prev => [...prev, { 
         role: "assistant", 
-        content: "Oh no! My circuits are feeling a bit shy right now. ✨ Give me a moment to sparkle and try again!" 
+        content: "My server is just waking up ✨ Give me about 30 seconds to warm up my circuits and try sending your message again." 
       }]);
     } finally {
       setLoading(false);

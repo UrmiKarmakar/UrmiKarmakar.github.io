@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect } from 'react'; // Added useEffect
+import React, { Suspense, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from "sonner";
@@ -11,6 +11,7 @@ import PageNotFound from './lib/PageNotFound';
 
 // Components
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+import ChatBot from '@/components/portfolio/ChatBot'; // Import ChatBot
 
 // Destructure pages configuration
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -19,7 +20,6 @@ const MainPage = Pages[mainPageKey] || (() => <></>);
 
 /**
  * LayoutWrapper provides a consistent structure around pages
- * if a Layout component is defined in pagesConfig.
  */
 const LayoutWrapper = ({ children, currentPageName }) => {
   return Layout ? (
@@ -30,12 +30,12 @@ const LayoutWrapper = ({ children, currentPageName }) => {
 };
 
 /**
- * AuthenticatedApp handles the Auth logic and Routing.
- * Optimized for fast feedback and clear error states.
+ * AuthenticatedApp handles the Auth logic, Routing, and Global Components.
  */
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
+  // 1. Loading State
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-background">
@@ -44,7 +44,7 @@ const AuthenticatedApp = () => {
     );
   }
 
-  // 2. Handle Backend/Auth Errors (e.g., HandyConnect/Pylot restrictions)
+  // 2. Auth Error Handling
   if (authError) {
     if (authError.type === 'user_not_registered') {
       return <UserNotRegisteredError />;
@@ -54,15 +54,18 @@ const AuthenticatedApp = () => {
     }
   }
 
-  // 3. Main Route Rendering
+  // 3. Main Rendering
   return (
     <Suspense fallback={
       <div className="h-screen w-full flex items-center justify-center bg-background animate-pulse">
         <div className="h-24 w-24 rounded-full bg-primary/10 glow-purple-sm" />
       </div>
     }>
+      {/* 🚀 CHATBOT PLACEMENT: Inside Suspense, outside Routes */}
+      <ChatBot />
+
       <Routes>
-        {/* Main Entry Page (e.g., localhost:5173/) */}
+        {/* Main Entry Page */}
         <Route 
           path="/" 
           element={
@@ -72,7 +75,7 @@ const AuthenticatedApp = () => {
           } 
         />
 
-        {/* Dynamic Pages from pages.config (e.g., localhost:5173/home) */}
+        {/* Dynamic Pages */}
         {Object.entries(Pages).map(([path, Page]) => (
           <Route
             key={path}
@@ -94,14 +97,12 @@ const AuthenticatedApp = () => {
 
 /**
  * Root App Component
- * Wraps everything in necessary Providers for Data and Auth.
  */
 function App() {
-//Wake up Render Backend
+  // Wake up Render Backend
   useEffect(() => {
     const wakeUpServer = async () => {
       try {
-        // This pings your backend URL to wake it up from "sleep" mode
         await fetch("https://urmikarmakar-github-io.onrender.com/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -109,7 +110,7 @@ function App() {
         });
         console.log("Backend server is awake and ready! 🚀");
       } catch (error) {
-        console.error("Server wakeup failed, but that's okay:", error);
+        console.error("Server wakeup failed:", error);
       }
     };
 
