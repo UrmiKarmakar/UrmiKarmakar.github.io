@@ -21,18 +21,31 @@ export default function Navbar() {
 
   const AI_AVATAR_URL = "/images/UK_AI.png"; 
 
-  // 1. Handle scroll effect
+  // 1. Handle scroll effect for background glass styling
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // 2. Intersection Observer for active section highlighting
+  // 2. Sync active state with URL Hash on load/change
+  useEffect(() => {
+    const syncHash = () => {
+      const hash = window.location.hash.replace("#", "");
+      const matched = NAV_ITEMS.find(item => item.toLowerCase() === hash.toLowerCase());
+      if (matched) setActive(matched);
+    };
+    
+    window.addEventListener("hashchange", syncHash);
+    syncHash(); // Check on initial mount
+    return () => window.removeEventListener("hashchange", syncHash);
+  }, []);
+
+  // 3. Intersection Observer for real-time scroll highlighting
   useEffect(() => {
     const observerOptions = {
       root: null,
-      rootMargin: "-40% 0px -40% 0px", 
+      rootMargin: "-45% 0px -45% 0px", // Focus on the center of the screen
       threshold: 0
     };
 
@@ -57,13 +70,14 @@ export default function Navbar() {
     return () => observer.disconnect();
   }, []);
 
-  // 3. Smooth Scroll function
+  // 4. Enhanced Smooth Scroll function
   const scrollTo = (id) => {
     const element = document.getElementById(id) || document.getElementById(id.toLowerCase());
     
     if (element) {
       setActive(id);
       setIsOpen(false); 
+      setIsHovered(false); // Close hover state after clicking
 
       const offset = 80; 
       const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
@@ -73,26 +87,27 @@ export default function Navbar() {
         top: offsetPosition,
         behavior: "smooth"
       });
-    } else {
-      console.warn(`Element with id "${id}" not found. Check your Section IDs!`);
+      
+      // Update URL hash without jumping
+      window.history.pushState(null, null, `#${id}`);
     }
   };
 
   return (
     <>
-      {/* Invisible trigger area - Increased Z-index to ensure it works on all pages */}
+      {/* 🛠️ Invisible trigger area - Set to h-2 to be less intrusive but responsive */}
       <div 
-        className="fixed top-0 left-0 right-0 h-4 z-[60] pointer-events-auto" 
+        className="fixed top-0 left-0 right-0 h-2 z-[60]" 
         onMouseEnter={() => setIsHovered(true)} 
       />
 
       <nav 
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 pointer-events-auto
           ${(scrolled || isHovered) 
             ? "glass border-b border-white/10 shadow-lg py-2 bg-[#0f071a]/90 backdrop-blur-xl translate-y-0" 
-            : "bg-transparent py-4 border-b border-transparent -translate-y-1 lg:translate-y-0"
+            : "bg-transparent py-4 border-b border-transparent -translate-y-2 lg:translate-y-0"
           }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -122,16 +137,11 @@ export default function Navbar() {
             {/* Desktop Menu */}
             <div className="hidden lg:flex items-center gap-1 bg-white/5 p-1 rounded-2xl border border-white/5">
               {NAV_ITEMS.map((item, i) => (
-                <motion.button
+                <button
                   key={item}
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05 }}
                   onClick={() => scrollTo(item)}
                   className={`relative px-4 py-2 rounded-xl text-[13px] font-medium transition-all duration-300 ${
-                    active === item
-                      ? "text-white"
-                      : "text-muted-foreground hover:text-foreground"
+                    active === item ? "text-white" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   {active === item && (
@@ -141,7 +151,7 @@ export default function Navbar() {
                     />
                   )}
                   <span className="relative z-10">{item}</span>
-                </motion.button>
+                </button>
               ))}
             </div>
 
@@ -164,11 +174,7 @@ export default function Navbar() {
               exit={{ opacity: 0 }}
               className="fixed inset-0 z-[110] lg:hidden"
             >
-              <div 
-                className="absolute inset-0 bg-black/95 backdrop-blur-md" 
-                onClick={() => setIsOpen(false)} 
-              />
-
+              <div className="absolute inset-0 bg-black/95 backdrop-blur-md" onClick={() => setIsOpen(false)} />
               <motion.div 
                 className="absolute right-0 top-0 bottom-0 w-[280px] bg-[#0f071a] border-l border-white/10 p-6 flex flex-col"
                 initial={{ x: "100%" }}
