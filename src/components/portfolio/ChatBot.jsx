@@ -15,11 +15,12 @@ export default function ChatBot() {
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [viewportHeight, setViewportHeight] = useState("auto"); // Fixed: Declared at top level
   const messagesEndRef = useRef(null);
   
   const AVATAR_URL = "/images/UK_AI.png";
 
-// Handle Mobile Keyboard / Viewport sizing
+  // Handle Mobile Keyboard / Viewport sizing
   useEffect(() => {
     if (!isOpen) return;
     const handleResize = () => {
@@ -48,8 +49,6 @@ export default function ChatBot() {
     setMessages(prev => [...prev, { role: "user", content: userMsg }]);
     setLoading(true);
 
-    const [viewportHeight, setViewportHeight] = useState("auto");
-
     try {
       const response = await fetch("https://urmikarmakar-github-io.onrender.com/chat", {
         method: "POST",
@@ -70,8 +69,9 @@ export default function ChatBot() {
     }
   };
   
-return (
-    <div className="fixed bottom-0 right-0 w-full md:w-auto h-auto z-[9999] p-3 md:p-6 pointer-events-none flex flex-col items-end">
+  return (
+    // Fixed: Added max-w-screen to ensure outer container doesn't block layout
+    <div className="fixed bottom-0 right-0 w-full md:w-auto h-auto z-[9999] p-3 md:p-6 pointer-events-none flex flex-col items-end max-w-full overflow-hidden">
       <style>{`
         .custom-scrollbar::-webkit-scrollbar { width: 3px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -92,7 +92,8 @@ return (
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             style={{ height: viewportHeight }}
-            className="pointer-events-auto mb-2 md:mb-4 w-full md:w-[380px] md:h-[600px] overflow-hidden rounded-t-[2rem] md:rounded-[2.5rem] border border-purple-500/30 shadow-2xl flex flex-col water-bg backdrop-blur-lg"
+            // Fixed: Added max-h-[90vh] for mobile safety so it doesn't cover top navbar
+            className="pointer-events-auto mb-2 md:mb-4 w-full md:w-[380px] md:h-[600px] max-h-[85vh] overflow-hidden rounded-t-[2rem] md:rounded-[2.5rem] border border-purple-500/30 shadow-2xl flex flex-col water-bg backdrop-blur-lg"
           >
             {/* Header */}
             <div className="p-4 border-b border-purple-500/20 bg-purple-950/40 backdrop-blur-md flex items-center justify-between">
