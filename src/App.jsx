@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react'; // Added useEffect
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from "sonner";
@@ -36,7 +36,6 @@ const LayoutWrapper = ({ children, currentPageName }) => {
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
-  // 1. High-Performance Loading State (Matches your theme colors)
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-background">
@@ -98,6 +97,25 @@ const AuthenticatedApp = () => {
  * Wraps everything in necessary Providers for Data and Auth.
  */
 function App() {
+//Wake up Render Backend
+  useEffect(() => {
+    const wakeUpServer = async () => {
+      try {
+        // This pings your backend URL to wake it up from "sleep" mode
+        await fetch("https://urmikarmakar-github-io.onrender.com/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: "ping" }),
+        });
+        console.log("Backend server is awake and ready! 🚀");
+      } catch (error) {
+        console.error("Server wakeup failed, but that's okay:", error);
+      }
+    };
+
+    wakeUpServer();
+  }, []);
+
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
@@ -105,7 +123,6 @@ function App() {
           <AuthenticatedApp />
         </Router>
         
-        {/* Sonner Toaster: Lightweight and Mobile-Optimized. */}
         <Toaster 
           position="bottom-center" 
           richColors 
