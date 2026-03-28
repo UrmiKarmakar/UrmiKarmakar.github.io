@@ -16,22 +16,23 @@ const NAV_ITEMS = [
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isHovered, setIsHovered] = useState(false); // Detects mouse at top
   const [active, setActive] = useState("Home");
 
   const AI_AVATAR_URL = "/images/UK_AI.png"; 
 
-  // 1. Handle scroll for glass background effect
+  // 1. Handle scroll effect
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // 2. Intersection Observer to highlight the active section while scrolling
+  // 2. Intersection Observer for active section highlighting
   useEffect(() => {
     const observerOptions = {
       root: null,
-      rootMargin: "-20% 0px -70% 0px",
+      rootMargin: "-40% 0px -40% 0px", // More accurate selection when section is centered
       threshold: 0
     };
 
@@ -62,7 +63,7 @@ export default function Navbar() {
     
     if (element) {
       setActive(id);
-      setIsOpen(false); // Closes the mobile menu when an item is clicked
+      setIsOpen(false); 
 
       const offset = 80; 
       const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
@@ -73,108 +74,134 @@ export default function Navbar() {
         behavior: "smooth"
       });
     } else {
-      console.warn(`Element with id "${id}" not found.`);
+      console.warn(`Element with id "${id}" not found. Check your Section IDs!`);
     }
   };
 
-return (
-    <nav 
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 
-        ${scrolled 
-          ? "glass border-b border-white/5 shadow-lg" 
-          : "bg-transparent hover:bg-[#0f071a]/80 hover:backdrop-blur-lg border-b border-transparent hover:border-white/5"
-        }`}
-    >
-      {/* The 'hover' classes above ensure that as soon as your cursor 
-          touches the Navbar area at the top, it becomes visible.
-      */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          
-          {/* Logo Section */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-3 cursor-pointer group"
-            onClick={() => scrollTo("Home")}
-          >
-            <div className="w-10 h-10 rounded-xl border border-purple-500/30 p-0.5 bg-black/40 overflow-hidden group-hover:border-primary transition-colors">
-              <img 
-                src={AI_AVATAR_URL} 
-                alt="Urmi AI Logo" 
-                className="object-cover object-center w-full h-full scale-125 rounded-lg" 
-              />
-            </div>
+  return (
+    <>
+      {/* Invisible trigger area to detect cursor moving to top */}
+      <div 
+        className="fixed top-0 left-0 right-0 h-4 z-[55]" 
+        onMouseEnter={() => setIsHovered(true)} 
+      />
+
+      <nav 
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 
+          ${(scrolled || isHovered) 
+            ? "glass border-b border-white/10 shadow-lg py-2 bg-[#0f071a]/80 backdrop-blur-xl" 
+            : "bg-transparent py-4 border-b border-transparent"
+          }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
             
-            <div className="hidden sm:block">
-              <span className="font-mono font-bold text-sm text-primary">urmi@dev</span>
-              <span className="text-muted-foreground font-mono text-sm">:~$</span>
-            </div>
-          </motion.div>
+            {/* Logo Section */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex items-center gap-3 cursor-pointer group"
+              onClick={() => scrollTo("Home")}
+            >
+              <div className="w-10 h-10 rounded-xl border border-purple-500/30 p-0.5 bg-black/40 overflow-hidden group-hover:border-primary transition-colors">
+                <img 
+                  src={AI_AVATAR_URL} 
+                  alt="Urmi AI Logo" 
+                  className="object-cover object-center w-full h-full scale-125 rounded-lg" 
+                />
+              </div>
+              
+              <div className="hidden sm:block">
+                <span className="font-mono font-bold text-sm text-primary">urmi@dev</span>
+                <span className="text-muted-foreground font-mono text-sm">:~$</span>
+              </div>
+            </motion.div>
 
-          {/* Desktop Menu */}
-          <div className="hidden lg:flex items-center gap-1">
-            {NAV_ITEMS.map((item, i) => (
-              <motion.button
-                key={item}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
-                onClick={() => scrollTo(item)}
-                className={`relative px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-300 ${
-                  active === item
-                    ? "text-primary bg-primary/10"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                }`}
-              >
-                {item}
-                {active === item && (
-                  <motion.div 
-                    layoutId="activeGlow"
-                    className="absolute bottom-0 left-0 right-0 h-[2px] bg-primary shadow-[0_0_10px_#8b5cf6] rounded-full"
-                  />
-                )}
-              </motion.button>
-            ))}
-          </div>
-
-          {/* Mobile Toggle Button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden p-2 text-muted-foreground hover:text-foreground focus:outline-none"
-          >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Menu List */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden glass border-t border-white/5 overflow-hidden bg-[#0f071a]/95 backdrop-blur-xl"
-          >
-            <div className="px-4 py-6 space-y-2 flex flex-col items-center">
-              {NAV_ITEMS.map((item) => (
-                <button
+            {/* Desktop Menu - Proper Item Highlighting */}
+            <div className="hidden lg:flex items-center gap-1 bg-white/5 p-1 rounded-2xl border border-white/5">
+              {NAV_ITEMS.map((item, i) => (
+                <motion.button
                   key={item}
-                  onClick={() => scrollTo(item)} 
-                  className={`block w-full text-center px-4 py-4 rounded-xl text-base font-medium transition-all ${
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                  onClick={() => scrollTo(item)}
+                  className={`relative px-4 py-2 rounded-xl text-[13px] font-medium transition-all duration-300 ${
                     active === item
-                      ? "text-primary bg-primary/20 border-b-2 border-primary"
-                      : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                      ? "text-white"
+                      : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  {item}
-                </button>
+                  {active === item && (
+                    <motion.div 
+                      layoutId="activeGlow"
+                      className="absolute inset-0 bg-primary/20 rounded-xl border border-primary/30 shadow-[0_0_15px_rgba(139,92,246,0.2)]"
+                    />
+                  )}
+                  <span className="relative z-10">{item}</span>
+                </motion.button>
               ))}
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </nav>
+
+            {/* Mobile Toggle Button */}
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="lg:hidden p-2 text-muted-foreground hover:text-foreground focus:outline-none"
+            >
+              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Menu List */}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[110] lg:hidden"
+            >
+              <div 
+                className="absolute inset-0 bg-black/90 backdrop-blur-md" 
+                onClick={() => setIsOpen(false)} 
+              />
+
+              <motion.div 
+                className="absolute right-0 top-0 bottom-0 w-[280px] bg-[#0f071a] border-l border-white/10 p-6 flex flex-col"
+                initial={{ x: "100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "100%" }}
+                transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              >
+                <div className="flex justify-end mb-8">
+                  <button onClick={() => setIsOpen(false)} className="p-2 text-white/70 hover:text-white">
+                    <X size={28} />
+                  </button>
+                </div>
+          
+                <div className="flex flex-col gap-2">
+                  {NAV_ITEMS.map((item) => (
+                    <button
+                      key={item}
+                      onClick={() => scrollTo(item)}
+                      className={`w-full text-left px-6 py-4 rounded-2xl text-lg font-semibold transition-all ${
+                        active === item
+                          ? "text-primary bg-primary/10 border-r-4 border-primary shadow-[0_0_20px_rgba(139,92,246,0.1)]"
+                          : "text-muted-foreground hover:text-white hover:bg-white/5"
+                      }`}
+                    >
+                      {item}
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </nav>
+    </>
   );
 }

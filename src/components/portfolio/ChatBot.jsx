@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-/* Added MessageSquare for the status indicator icon */
 import { X, Send, User, MessageSquare } from "lucide-react"; 
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
@@ -106,12 +105,11 @@ export default function ChatBot() {
                 <div className="relative">
                   {/* Avatar Zoom applied here */}
                   <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl border-2 border-purple-400/40 p-0.5 bg-black/40 overflow-hidden">
-                    <img 
-                      src={AVATAR_URL} 
-                      alt="Urmi AI" 
-                      className="object-cover object-center w-full h-full scale-125 rounded-lg md:rounded-xl" 
-                    />
+                    <img src={AVATAR_URL} alt="Urmi AI" className="object-cover object-center w-full h-full scale-125 rounded-lg md:rounded-xl" />
                   </div>
+                  <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-green-500 border-2 border-[#0f071a] rounded-full z-10">
+                    <span className="absolute inset-0 rounded-full bg-green-400 animate-ping opacity-75"></span>
+                  </span>
                 </div>
                 <div>
                   <h3 className="text-white font-bold text-sm md:text-base tracking-tight">Urmi_AI</h3>
@@ -181,17 +179,13 @@ export default function ChatBot() {
         <motion.button
           layoutId="chat-toggle"
           onClick={() => setIsOpen(true)}
-          className="pointer-events-auto group relative w-14 h-14 md:w-16 md:h-16 rounded-xl md:rounded-2xl overflow-hidden shadow-[0_0_25px_rgba(147,51,234,0.3)] border-2 border-purple-500/40 bg-[#0f071a]"
-          whileHover={{ scale: 1.15, rotate: 2 }} 
-          whileTap={{ scale: 0.95 }}
+          className="pointer-events-auto relative w-14 h-14 md:w-16 md:h-16 rounded-2xl overflow-hidden shadow-xl border-2 border-purple-500/40 bg-[#0f071a]"
+          whileHover={{ scale: 1.1 }}
         >
-          {/* Zoomed Avatar for main toggle */}
-          <img 
-            src={AVATAR_URL} 
-            alt="Open Chat" 
-            className="w-full h-full object-cover object-center scale-125 opacity-80 group-hover:opacity-100 transition-all duration-300" 
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-purple-950/60 to-transparent" />
+          <img src={AVATAR_URL} className="w-full h-full object-cover scale-125 opacity-80" />
+          <span className="absolute top-1 right-1 w-4 h-4 bg-green-500 border-2 border-[#0f071a] rounded-full z-20">
+            <span className="absolute inset-0 rounded-full bg-green-400 animate-ping opacity-75"></span>
+          </span>
         </motion.button>
       )}
     </div>
