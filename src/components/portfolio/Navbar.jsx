@@ -16,7 +16,7 @@ const NAV_ITEMS = [
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [isHovered, setIsHovered] = useState(false); // Detects mouse at top
+  const [isHovered, setIsHovered] = useState(false); 
   const [active, setActive] = useState("Home");
 
   const AI_AVATAR_URL = "/images/UK_AI.png"; 
@@ -32,7 +32,7 @@ export default function Navbar() {
   useEffect(() => {
     const observerOptions = {
       root: null,
-      rootMargin: "-40% 0px -40% 0px", // More accurate selection when section is centered
+      rootMargin: "-40% 0px -40% 0px", 
       threshold: 0
     };
 
@@ -80,9 +80,9 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Invisible trigger area to detect cursor moving to top */}
+      {/* Invisible trigger area - Increased Z-index to ensure it works on all pages */}
       <div 
-        className="fixed top-0 left-0 right-0 h-4 z-[55]" 
+        className="fixed top-0 left-0 right-0 h-4 z-[60] pointer-events-auto" 
         onMouseEnter={() => setIsHovered(true)} 
       />
 
@@ -91,8 +91,8 @@ export default function Navbar() {
         onMouseLeave={() => setIsHovered(false)}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 
           ${(scrolled || isHovered) 
-            ? "glass border-b border-white/10 shadow-lg py-2 bg-[#0f071a]/80 backdrop-blur-xl" 
-            : "bg-transparent py-4 border-b border-transparent"
+            ? "glass border-b border-white/10 shadow-lg py-2 bg-[#0f071a]/90 backdrop-blur-xl translate-y-0" 
+            : "bg-transparent py-4 border-b border-transparent -translate-y-1 lg:translate-y-0"
           }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -119,7 +119,7 @@ export default function Navbar() {
               </div>
             </motion.div>
 
-            {/* Desktop Menu - Proper Item Highlighting */}
+            {/* Desktop Menu */}
             <div className="hidden lg:flex items-center gap-1 bg-white/5 p-1 rounded-2xl border border-white/5">
               {NAV_ITEMS.map((item, i) => (
                 <motion.button
@@ -165,7 +165,7 @@ export default function Navbar() {
               className="fixed inset-0 z-[110] lg:hidden"
             >
               <div 
-                className="absolute inset-0 bg-black/90 backdrop-blur-md" 
+                className="absolute inset-0 bg-black/95 backdrop-blur-md" 
                 onClick={() => setIsOpen(false)} 
               />
 

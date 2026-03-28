@@ -107,13 +107,13 @@ export default function ChatBot() {
                   <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl border-2 border-purple-400/40 p-0.5 bg-black/40 overflow-hidden">
                     <img src={AVATAR_URL} alt="Urmi AI" className="object-cover object-center w-full h-full scale-125 rounded-lg md:rounded-xl" />
                   </div>
-                  <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-green-500 border-2 border-[#0f071a] rounded-full z-10">
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 border-2 border-[#0f071a] rounded-full z-10">
                     <span className="absolute inset-0 rounded-full bg-green-400 animate-ping opacity-75"></span>
                   </span>
                 </div>
                 <div>
                   <h3 className="text-white font-bold text-sm md:text-base tracking-tight">Urmi_AI</h3>
-                  <p className="text-[9px] md:text-[10px] text-purple-300 font-black uppercase tracking-[0.15em]">✨ Tech Bestie</p>
+                  <p className="text-[9px] md:text-[10px] text-purple-300 font-black uppercase tracking-[0.15em]">Tech Bestie ✨</p>
                 </div>
               </div>
               <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="text-white/60 hover:text-white hover:bg-white/10 rounded-full h-8 w-8">
