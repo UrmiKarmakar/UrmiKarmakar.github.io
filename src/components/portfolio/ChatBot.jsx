@@ -95,7 +95,8 @@ export default function ChatBot() {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="pointer-events-auto mb-4 w-full max-w-[380px] h-[80vh] md:h-[600px] overflow-hidden rounded-[2.5rem] border border-purple-500/30 shadow-[0_0_50px_rgba(147,51,234,0.3)] flex flex-col water-bg backdrop-blur-xl"
+            /* Added max-h for better mobile keyboard support */
+            className="pointer-events-auto mb-4 w-full max-w-[380px] h-[70vh] md:h-[600px] max-h-[calc(100dvh-100px)] overflow-hidden rounded-[2.5rem] border border-purple-500/30 shadow-[0_0_50px_rgba(147,51,234,0.3)] flex flex-col water-bg backdrop-blur-xl"
           >
             {/* Header */}
             <div className="relative z-10 p-5 border-b border-purple-500/20 bg-purple-950/40 backdrop-blur-md flex items-center justify-between">

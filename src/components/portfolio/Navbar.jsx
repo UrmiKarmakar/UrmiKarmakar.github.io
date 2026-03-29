@@ -169,53 +169,64 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Navigation Sidebar */}
-        <AnimatePresence>
-          {isOpen && (
-            /* 1. Backdrop Overlay: Prevents background content from bleeding through */
-            <div className="fixed inset-0 z-[10001] lg:hidden">
-              <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="absolute inset-0 bg-black/90 backdrop-blur-md" 
-                onClick={() => setIsOpen(false)} 
-              />
-
-              {/* 2. Sidebar: Now uses h-full and flex-col to handle shrinking/resizing */}
-              <motion.div 
-                className="absolute right-0 top-0 bottom-0 w-[280px] bg-[#0f071a] border-l border-purple-500/20 p-6 flex flex-col shadow-2xl"
-                initial={{ x: "100%" }}
-                animate={{ x: 0 }}
-                exit={{ x: "100%" }}
-                transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              >
-                <div className="flex justify-between items-center mb-8">
-                  <span className="font-mono font-bold text-purple-400 text-xs">NAVIGATION</span>
-                  <button onClick={() => setIsOpen(false)} className="p-2 text-white/70 hover:text-white">
-                    <X size={24} />
-                  </button>
-                </div>
+          <AnimatePresence>
+            {isOpen && (
+              <div className="fixed inset-0 z-[10001] lg:hidden">
+                {/* Backdrop - Increased opacity to 95% to fully hide the "crashing" background items */}
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute inset-0 bg-black/95 backdrop-blur-xl" 
+                  onClick={() => setIsOpen(false)} 
+                />
           
-                {/* 3. Scrollable Area: Prevents items from getting cut off on small screens */}
-                <div className="flex flex-col gap-1 overflow-y-auto flex-grow pr-2 custom-scrollbar pb-10">
-                  {NAV_ITEMS.map((item) => (
-                    <button
-                      key={item}
-                      onClick={() => scrollTo(item)}
-                      className={`w-full text-left px-5 py-4 rounded-xl text-sm font-semibold transition-all ${
-                        active === item
-                          ? "text-purple-400 bg-purple-500/10 border-r-4 border-purple-500"
-                          : "text-gray-400 hover:text-white hover:bg-white/5"
-                      }`}
+                {/* Sidebar - Uses 100dvh to prevent mobile browser cropping */}
+                <motion.div 
+                  className="absolute right-0 top-0 h-[100dvh] w-[280px] bg-[#0f071a] border-l border-purple-500/20 p-6 flex flex-col shadow-2xl"
+                  initial={{ x: "100%" }}
+                  animate={{ x: 0 }}
+                  exit={{ x: "100%" }}
+                  transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                >
+                  <div className="flex justify-between items-center mb-10">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
+                      <span className="font-mono font-bold text-purple-400 text-xs tracking-widest">MENU</span>
+                    </div>
+                    <button 
+                      onClick={() => setIsOpen(false)} 
+                      className="p-2 rounded-full bg-white/5 text-white/70 hover:text-white transition-colors"
                     >
-                      {item}
+                      <X size={20} />
                     </button>
-                  ))}
-                </div>
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>
+                  </div>
+            
+                  {/* Scrollable Items Area */}
+                  <div className="flex flex-col gap-2 overflow-y-auto flex-grow pr-2 custom-scrollbar pb-20">
+                    {NAV_ITEMS.map((item) => (
+                      <button
+                        key={item}
+                        onClick={() => scrollTo(item)}
+                        className={`w-full text-left px-6 py-4 rounded-xl text-sm font-bold transition-all duration-300 ${
+                          active === item
+                            ? "text-purple-400 bg-purple-500/10 border-l-2 border-purple-500"
+                            : "text-gray-400 hover:text-white hover:bg-white/5"
+                        }`}
+                      >
+                        {item}
+                      </button>
+                    ))}
+                  </div>
+                  
+                  {/* Optional: Footer inside sidebar to keep it grounded */}
+                  <div className="pt-6 border-t border-white/5 text-center">
+                       <span className="text-[10px] font-mono text-gray-500">urmi@portfolio v2.0</span>
+                  </div>
+                </motion.div>
+              </div>
+            )}
+          </AnimatePresence>
       </nav>
     </>
   );
