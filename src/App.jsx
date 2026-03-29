@@ -11,8 +11,7 @@ import PageNotFound from './lib/PageNotFound';
 
 // Components
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
-import ChatBot from '@/components/portfolio/ChatBot';
-import Navbar from '@/components/portfolio/Navbar';
+import ChatBot from '@/components/portfolio/ChatBot'; // Import ChatBot
 
 // Destructure pages configuration
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -30,9 +29,13 @@ const LayoutWrapper = ({ children, currentPageName }) => {
   );
 };
 
+/**
+ * AuthenticatedApp handles the Auth logic, Routing, and Global Components.
+ */
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
+  // 1. Loading State
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-background">
@@ -41,49 +44,57 @@ const AuthenticatedApp = () => {
     );
   }
 
+  // 2. Auth Error Handling
   if (authError) {
-    if (authError.type === 'user_not_registered') return <UserNotRegisteredError />;
-    if (authError.type === 'auth_required') { navigateToLogin(); return null; }
+    if (authError.type === 'user_not_registered') {
+      return <UserNotRegisteredError />;
+    } else if (authError.type === 'auth_required') {
+      navigateToLogin();
+      return null;
+    }
   }
 
+  // 3. Main Rendering
   return (
     <Suspense fallback={
       <div className="h-screen w-full flex items-center justify-center bg-background animate-pulse">
         <div className="h-24 w-24 rounded-full bg-primary/10 glow-purple-sm" />
       </div>
     }>
-      {/* 🟢 SAFE ZONE: Navbar and Chatbot stay OUTSIDE the blur target */}
-      <Navbar /> 
+      {/* 🚀 CHATBOT PLACEMENT: Inside Suspense, outside Routes */}
       <ChatBot />
 
-      {/* 🔴 BLUR ZONE: Wrap Routes in a main tag with an ID */}
-      <main id="main-content-area">
-        <Routes>
-          <Route 
-            path="/" 
+      <Routes>
+        {/* Main Entry Page */}
+        <Route 
+          path="/" 
+          element={
+            <LayoutWrapper currentPageName={mainPageKey}>
+              <MainPage />
+            </LayoutWrapper>
+          } 
+        />
+
+        {/* Dynamic Pages */}
+        {Object.entries(Pages).map(([path, Page]) => (
+          <Route
+            key={path}
+            path={`/${path}`}
             element={
-              <LayoutWrapper currentPageName={mainPageKey}>
-                <MainPage />
+              <LayoutWrapper currentPageName={path}>
+                <Page />
               </LayoutWrapper>
-            } 
+            }
           />
-          {Object.entries(Pages).map(([path, Page]) => (
-            <Route
-              key={path}
-              path={`/${path}`}
-              element={
-                <LayoutWrapper currentPageName={path}>
-                  <Page />
-                </LayoutWrapper>
-              }
-            />
-          ))}
-          <Route path="*" element={<PageNotFound />} />
-        </Routes>
-      </main>
+        ))}
+
+        {/* Catch-all 404 */}
+        <Route path="*" element={<PageNotFound />} />
+      </Routes>
     </Suspense>
   );
 };
+
 /**
  * Root App Component
  */
