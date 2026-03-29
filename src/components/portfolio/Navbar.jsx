@@ -21,6 +21,7 @@ export default function Navbar() {
 
   const AI_AVATAR_URL = "/images/UK_AI.png"; 
 
+  // 1. Handle background change on scroll
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
@@ -29,6 +30,7 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // 2. Sync active state with URL Hash
   useEffect(() => {
     const syncHash = () => {
       const hash = window.location.hash.replace("#", "");
@@ -41,6 +43,7 @@ export default function Navbar() {
     return () => window.removeEventListener("hashchange", syncHash);
   }, []);
 
+  // 3. Update active state based on section visibility (Intersection Observer)
   useEffect(() => {
     const observerOptions = {
       root: null,
@@ -69,6 +72,7 @@ export default function Navbar() {
     return () => observer.disconnect();
   }, []);
 
+  // 4. Smooth scroll function
   const scrollTo = (id) => {
     const element = document.getElementById(id) || document.getElementById(id.toLowerCase());
     
@@ -92,16 +96,18 @@ export default function Navbar() {
 
   return (
     <>
+      {/* Invisible trigger area for hover effects */}
       <div 
-        className="fixed top-0 left-0 right-0 h-1 z-[9999]" 
+        className="fixed top-0 left-0 right-0 h-1 z-[10001]" 
         onMouseEnter={() => setIsHovered(true)} 
       />
 
-      {/* FIXED POSITIONING: Added w-full and top-0 explicitly */}
       <nav 
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`fixed top-0 left-0 w-full z-[10000] transition-all duration-300 pointer-events-auto
+        // Forced inline styles to override any potential CSS conflicts
+        style={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 10000 }}
+        className={`transition-all duration-300 pointer-events-auto
           ${(scrolled || isHovered) 
             ? "bg-[#0f071a]/90 backdrop-blur-xl border-b border-purple-500/20 shadow-2xl py-2" 
             : "bg-transparent py-4"
@@ -110,6 +116,7 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             
+            {/* Logo and Dev Name */}
             <motion.div
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
@@ -130,6 +137,7 @@ export default function Navbar() {
               </div>
             </motion.div>
 
+            {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-1 bg-white/5 p-1 rounded-2xl border border-white/5">
               {NAV_ITEMS.map((item) => (
                 <button
@@ -150,6 +158,7 @@ export default function Navbar() {
               ))}
             </div>
 
+            {/* Mobile Menu Toggle */}
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="lg:hidden p-2 text-gray-400 hover:text-white focus:outline-none"
@@ -159,6 +168,7 @@ export default function Navbar() {
           </div>
         </div>
 
+        {/* Mobile Navigation Sidebar */}
         <AnimatePresence>
           {isOpen && (
             <div className="fixed inset-0 z-[110] lg:hidden">
