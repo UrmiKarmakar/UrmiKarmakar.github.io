@@ -52,32 +52,35 @@ const AuthenticatedApp = () => {
         <div className="h-24 w-24 rounded-full bg-primary/10 glow-purple-sm" />
       </div>
     }>
-      {/* 🚀 FIXED PLACEMENT: Navbar and Chatbot are now brothers at the top level */}
+      {/* 🟢 SAFE ZONE: Navbar and Chatbot stay OUTSIDE the blur target */}
       <Navbar /> 
       <ChatBot />
 
-      <Routes>
-        <Route 
-          path="/" 
-          element={
-            <LayoutWrapper currentPageName={mainPageKey}>
-              <MainPage />
-            </LayoutWrapper>
-          } 
-        />
-        {Object.entries(Pages).map(([path, Page]) => (
-          <Route
-            key={path}
-            path={`/${path}`}
+      {/* 🔴 BLUR ZONE: Wrap Routes in a main tag with an ID */}
+      <main id="main-content-area">
+        <Routes>
+          <Route 
+            path="/" 
             element={
-              <LayoutWrapper currentPageName={path}>
-                <Page />
+              <LayoutWrapper currentPageName={mainPageKey}>
+                <MainPage />
               </LayoutWrapper>
-            }
+            } 
           />
-        ))}
-        <Route path="*" element={<PageNotFound />} />
-      </Routes>
+          {Object.entries(Pages).map(([path, Page]) => (
+            <Route
+              key={path}
+              path={`/${path}`}
+              element={
+                <LayoutWrapper currentPageName={path}>
+                  <Page />
+                </LayoutWrapper>
+              }
+            />
+          ))}
+          <Route path="*" element={<PageNotFound />} />
+        </Routes>
+      </main>
     </Suspense>
   );
 };

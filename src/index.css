@@ -163,3 +163,50 @@
 img {
   content-visibility: auto;
 }
+
+/* --- UI PROTECTION LAYER --- */
+/* This prevents the Navbar and Chatbot from ever being blurred or hidden */
+nav, 
+#chat-toggle, 
+.chatbot-window, 
+#sonner-toaster,
+[role="dialog"] {
+  filter: none !important;
+  -webkit-filter: none !important;
+  isolation: isolate; 
+  z-index: 10001 !important; /* Forces them above any modal overlay */
+}
+
+/* --- THE BLUR ZONE --- */
+/* This blurs the main content ONLY when a modal/dialog is open.
+   It targets the ID we added to the <main> tag in App.jsx.
+*/
+body:has([role="dialog"]) #main-content-area,
+body.modal-open #main-content-area {
+  filter: blur(8px);
+  pointer-events: none; /* Disables clicking on the background */
+  transition: filter 0.3s ease;
+}
+
+/* Ensure images/videos inside the modal are sharp */
+[role="dialog"] img, 
+[role="dialog"] video {
+  filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Prevents the body from scrolling while keeping the layout stable */
+html, body {
+  height: -webkit-fill-available;
+  overflow-x: hidden;
+}
+
+/* Forces the container to respect the visual viewport (where the keyboard is) */
+.chatbot-window {
+  /* Use svh (small viewport height) for the collapsed state 
+     and adjust bottom padding when input is focused */
+  bottom: env(safe-area-inset-bottom, 20px) !important;
+  max-height: 80vh; /* Prevents it from going off-top */
+  display: flex;
+  flex-direction: column;
+}

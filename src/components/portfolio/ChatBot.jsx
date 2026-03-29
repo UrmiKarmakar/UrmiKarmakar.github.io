@@ -59,7 +59,7 @@ export default function ChatBot() {
   };
   
   return (
-    <div className="fixed bottom-0 right-0 w-full md:w-auto h-auto z-[9999] p-4 md:p-6 pointer-events-none flex flex-col items-end">
+    <div className="fixed bottom-0 right-0 w-full md:w-auto z-[9999] p-4 md:p-6 pointer-events-none flex flex-col items-end justify-end">
       <style>{`
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -96,7 +96,7 @@ export default function ChatBot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             /* Added max-h for better mobile keyboard support */
-            className="pointer-events-auto mb-4 w-full max-w-[380px] h-[70vh] md:h-[600px] max-h-[calc(100dvh-100px)] overflow-hidden rounded-[2.5rem] border border-purple-500/30 shadow-[0_0_50px_rgba(147,51,234,0.3)] flex flex-col water-bg backdrop-blur-xl"
+            className="pointer-events-auto mb-4 w-full max-w-[380px] h-[70vh] md:h-[600px] max-h-[85vh] overflow-hidden rounded-[2.5rem] border border-purple-500/30 shadow-[0_0_50px_rgba(147,51,234,0.3)] flex flex-col water-bg backdrop-blur-xl transition-all duration-300"
           >
             {/* Header */}
             <div className="relative z-10 p-5 border-b border-purple-500/20 bg-purple-950/40 backdrop-blur-md flex items-center justify-between">
@@ -154,6 +154,8 @@ export default function ChatBot() {
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
+                // ADD THIS LINE BELOW
+                onFocus={(e) => setTimeout(() => e.target.scrollIntoView({ block: "center", behavior: "smooth" }), 300)}
                 placeholder="Ask me anything about Urmi ✨"
                 className="bg-black/40 border-purple-500/30 text-white rounded-xl placeholder:text-purple-300/40 focus:ring-purple-500/50"
                 disabled={loading}

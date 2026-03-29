@@ -131,7 +131,7 @@ export default function Navbar() {
                 />
               </div>
               
-              <div className="hidden sm:block">
+              <div className="block">
                 <span className="font-mono font-bold text-sm text-purple-400">urmi@dev</span>
                 <span className="text-gray-400 font-mono text-sm">:~$</span>
               </div>
@@ -158,12 +158,13 @@ export default function Navbar() {
               ))}
             </div>
 
-            {/* Mobile Menu Toggle */}
+            {/* Mobile Menu Toggle - Keep this one! */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="lg:hidden p-2 text-gray-400 hover:text-white focus:outline-none z-[10002]" // Updated z-index
+              className="lg:hidden p-2 text-gray-400 hover:text-white focus:outline-none z-[10002]"
             >
-              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {/* Add a conditional class to the X icon so it turns purple when open */}
+              {isOpen ? <X className="w-6 h-6 text-purple-400" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
@@ -180,7 +181,7 @@ export default function Navbar() {
                   className="absolute inset-0 bg-black/95 backdrop-blur-xl" 
                   onClick={() => setIsOpen(false)} 
                 />
-          
+
                 {/* Sidebar - Uses 100dvh to prevent mobile browser cropping */}
                 <motion.div 
                   className="absolute right-0 top-0 h-[100dvh] w-[280px] bg-[#0f071a] border-l border-purple-500/20 p-6 flex flex-col shadow-2xl"
@@ -194,12 +195,6 @@ export default function Navbar() {
                       <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
                       <span className="font-mono font-bold text-purple-400 text-xs tracking-widest">MENU</span>
                     </div>
-                    <button 
-                      onClick={() => setIsOpen(false)} 
-                      className="p-2 rounded-full bg-white/5 text-white/70 hover:text-white transition-colors"
-                    >
-                      <X size={20} />
-                    </button>
                   </div>
             
                   {/* Scrollable Items Area */}
