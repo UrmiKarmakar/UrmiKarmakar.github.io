@@ -43,7 +43,7 @@ export default function Navbar() {
     return () => window.removeEventListener("hashchange", syncHash);
   }, []);
 
-  // 3. Update active state based on section visibility (Intersection Observer)
+  // 3. Update active state based on section visibility
   useEffect(() => {
     const observerOptions = {
       root: null,
@@ -81,7 +81,8 @@ export default function Navbar() {
       setIsOpen(false); 
       setIsHovered(false);
 
-      const offset = 80; 
+      // Increased offset to 100 to account for navbar height
+      const offset = 100; 
       const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
       const offsetPosition = elementPosition - offset;
 
@@ -105,9 +106,7 @@ export default function Navbar() {
       <nav 
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        // Forced inline styles to override any potential CSS conflicts
-        style={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 10000 }}
-        className={`transition-all duration-300 pointer-events-auto
+        className={`fixed top-0 left-0 w-full transition-all duration-300 pointer-events-auto z-[10000]
           ${(scrolled || isHovered) 
             ? "bg-[#0f071a]/90 backdrop-blur-xl border-b border-purple-500/20 shadow-2xl py-2" 
             : "bg-transparent py-4"
@@ -158,12 +157,12 @@ export default function Navbar() {
               ))}
             </div>
 
-            {/* Mobile Menu Toggle */}
+            {/* Mobile Menu Toggle Button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="lg:hidden p-2 text-gray-400 hover:text-white focus:outline-none z-[10002]" // Updated z-index
+              className="lg:hidden p-2 text-gray-400 hover:text-white focus:outline-none z-[10005]"
             >
-              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {isOpen ? <X className="w-7 h-7 text-purple-400" /> : <Menu className="w-7 h-7" />}
             </button>
           </div>
         </div>
@@ -171,46 +170,51 @@ export default function Navbar() {
         {/* Mobile Navigation Sidebar */}
         <AnimatePresence>
           {isOpen && (
-            /* 1. Backdrop Overlay: Prevents background content from bleeding through */
-            <div className="fixed inset-0 z-[10001] lg:hidden">
+            <div className="fixed inset-0 z-[10001] lg:hidden overflow-hidden">
+              {/* Overlay / Backdrop */}
               <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="absolute inset-0 bg-black/90 backdrop-blur-md" 
+                className="absolute inset-0 bg-black/80 backdrop-blur-sm" 
                 onClick={() => setIsOpen(false)} 
               />
 
-              {/* 2. Sidebar: Now uses h-full and flex-col to handle shrinking/resizing */}
+              {/* Sidebar Content */}
               <motion.div 
-                className="absolute right-0 top-0 bottom-0 w-[280px] bg-[#0f071a] border-l border-purple-500/20 p-6 flex flex-col shadow-2xl"
+                className="absolute right-0 top-0 bottom-0 w-[300px] bg-[#0f071a] border-l border-purple-500/20 p-8 flex flex-col shadow-2xl z-[10002]"
                 initial={{ x: "100%" }}
                 animate={{ x: 0 }}
                 exit={{ x: "100%" }}
-                transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                transition={{ type: "spring", damping: 30, stiffness: 300 }}
               >
-                <div className="flex justify-between items-center mb-8">
-                  <span className="font-mono font-bold text-purple-400 text-xs">NAVIGATION</span>
-                  <button onClick={() => setIsOpen(false)} className="p-2 text-white/70 hover:text-white">
-                    <X size={24} />
-                  </button>
+                <div className="flex items-center gap-2 mb-10 pb-4 border-b border-white/5">
+                  <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
+                  <span className="font-mono font-bold text-purple-400 text-xs tracking-widest">URMI_MENU</span>
                 </div>
           
-                {/* 3. Scrollable Area: Prevents items from getting cut off on small screens */}
-                <div className="flex flex-col gap-1 overflow-y-auto flex-grow pr-2 custom-scrollbar pb-10">
+                {/* List-wise Navigation */}
+                <div className="flex flex-col gap-3 overflow-y-auto flex-grow pr-2 custom-scrollbar">
                   {NAV_ITEMS.map((item) => (
                     <button
                       key={item}
                       onClick={() => scrollTo(item)}
-                      className={`w-full text-left px-5 py-4 rounded-xl text-sm font-semibold transition-all ${
+                      className={`w-full text-left px-6 py-4 rounded-2xl text-[15px] font-bold transition-all duration-300 flex items-center justify-between group ${
                         active === item
-                          ? "text-purple-400 bg-purple-500/10 border-r-4 border-purple-500"
+                          ? "text-purple-400 bg-purple-500/10 border-l-2 border-purple-500"
                           : "text-gray-400 hover:text-white hover:bg-white/5"
                       }`}
                     >
-                      {item}
+                      <span>{item}</span>
+                      <span className="text-[10px] opacity-0 group-hover:opacity-50 transition-opacity font-mono">/0{NAV_ITEMS.indexOf(item) + 1}</span>
                     </button>
                   ))}
+                </div>
+
+                <div className="mt-auto pt-8 border-t border-white/5">
+                   <p className="text-[10px] font-mono text-gray-500 text-center uppercase tracking-widest">
+                     Ready to build the future
+                   </p>
                 </div>
               </motion.div>
             </div>

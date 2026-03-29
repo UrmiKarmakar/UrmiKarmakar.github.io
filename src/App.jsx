@@ -84,7 +84,6 @@ const AuthenticatedApp = () => {
     </Suspense>
   );
 };
-
 /**
  * Root App Component
  */
