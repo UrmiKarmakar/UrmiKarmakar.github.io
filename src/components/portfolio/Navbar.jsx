@@ -21,10 +21,11 @@ export default function Navbar() {
 
   const AI_AVATAR_URL = "/images/UK_AI.png"; 
 
-  // 1. Handle background change on scroll
+  // 1. Handle scroll effect for background glass styling
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 10);
+      // Set scrolled true after 20px for a more immediate response
+      setScrolled(window.scrollY > 20);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -43,7 +44,7 @@ export default function Navbar() {
     return () => window.removeEventListener("hashchange", syncHash);
   }, []);
 
-  // 3. Update active state based on section visibility
+  // 3. Intersection Observer for real-time scroll highlighting
   useEffect(() => {
     const observerOptions = {
       root: null,
@@ -72,7 +73,7 @@ export default function Navbar() {
     return () => observer.disconnect();
   }, []);
 
-  // 4. Smooth scroll function
+  // 4. Smooth Scroll function
   const scrollTo = (id) => {
     const element = document.getElementById(id) || document.getElementById(id.toLowerCase());
     
@@ -81,8 +82,7 @@ export default function Navbar() {
       setIsOpen(false); 
       setIsHovered(false);
 
-      // Increased offset to 100 to account for navbar height
-      const offset = 100; 
+      const offset = 80; 
       const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
       const offsetPosition = elementPosition - offset;
 
@@ -97,29 +97,30 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Invisible trigger area for hover effects */}
+      {/* Detection trigger for hover - Reduced to avoid blocking content clicks */}
       <div 
-        className="fixed top-0 left-0 right-0 h-1 z-[10001]" 
+        className="fixed top-0 left-0 right-0 h-1 z-[45]" 
         onMouseEnter={() => setIsHovered(true)} 
       />
 
       <nav 
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`fixed top-0 left-0 w-full transition-all duration-300 pointer-events-auto z-[10000]
+        // Fixed Logic: Removed -translate-y-2 to prevent it from disappearing
+        className={`fixed top-0 left-0 right-0 z-[10000] transition-all duration-300
           ${(scrolled || isHovered) 
-            ? "bg-[#0f071a]/90 backdrop-blur-xl border-b border-purple-500/20 shadow-2xl py-2" 
-            : "bg-transparent py-4"
+            ? "bg-[#0f071a]/85 backdrop-blur-md border-b border-purple-500/20 shadow-lg py-2" 
+            : "bg-transparent py-4 border-b border-transparent"
           }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             
-            {/* Logo and Dev Name */}
+            {/* Logo Section */}
             <motion.div
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
-              className="flex items-center gap-3 cursor-pointer group"
+              className="flex items-center gap-3 cursor-pointer group pointer-events-auto"
               onClick={() => scrollTo("Home")}
             >
               <div className="w-10 h-10 rounded-xl border border-purple-500/30 p-0.5 bg-black/40 overflow-hidden group-hover:border-purple-500 transition-colors">
@@ -130,19 +131,19 @@ export default function Navbar() {
                 />
               </div>
               
-              <div className="block">
+              <div className="hidden sm:block">
                 <span className="font-mono font-bold text-sm text-purple-400">urmi@dev</span>
                 <span className="text-gray-400 font-mono text-sm">:~$</span>
               </div>
             </motion.div>
 
-            {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center gap-1 bg-white/5 p-1 rounded-2xl border border-white/5">
+            {/* Desktop Menu */}
+            <div className="hidden lg:flex items-center gap-1 bg-white/5 p-1 rounded-2xl border border-white/5 pointer-events-auto">
               {NAV_ITEMS.map((item) => (
                 <button
                   key={item}
                   onClick={() => scrollTo(item)}
-                  className={`relative px-4 py-2 rounded-xl text-[12px] font-medium transition-all duration-300 ${
+                  className={`relative px-4 py-2 rounded-xl text-[13px] font-medium transition-all duration-300 ${
                     active === item ? "text-white" : "text-gray-400 hover:text-white"
                   }`}
                 >
@@ -157,64 +158,54 @@ export default function Navbar() {
               ))}
             </div>
 
-            {/* Mobile Menu Toggle Button */}
+            {/* Mobile Toggle Button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="lg:hidden p-2 text-gray-400 hover:text-white focus:outline-none z-[10005]"
+              className="lg:hidden p-2 text-gray-400 hover:text-white focus:outline-none pointer-events-auto"
             >
-              {isOpen ? <X className="w-7 h-7 text-purple-400" /> : <Menu className="w-7 h-7" />}
+              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Navigation Sidebar */}
+        {/* Mobile Menu List */}
         <AnimatePresence>
           {isOpen && (
-            <div className="fixed inset-0 z-[10001] lg:hidden overflow-hidden">
-              {/* Overlay / Backdrop */}
+            <div className="fixed inset-0 z-[110] lg:hidden">
               <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="absolute inset-0 bg-black/80 backdrop-blur-sm" 
+                className="absolute inset-0 bg-black/90 backdrop-blur-sm" 
                 onClick={() => setIsOpen(false)} 
               />
-
-              {/* Sidebar Content */}
               <motion.div 
-                className="absolute right-0 top-0 bottom-0 w-[300px] bg-[#0f071a] border-l border-purple-500/20 p-8 flex flex-col shadow-2xl z-[10002]"
+                className="absolute right-0 top-0 bottom-0 w-[280px] bg-[#0f071a] border-l border-purple-500/20 p-6 flex flex-col"
                 initial={{ x: "100%" }}
                 animate={{ x: 0 }}
                 exit={{ x: "100%" }}
-                transition={{ type: "spring", damping: 30, stiffness: 300 }}
+                transition={{ type: "spring", damping: 25, stiffness: 200 }}
               >
-                <div className="flex items-center gap-2 mb-10 pb-4 border-b border-white/5">
-                  <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
-                  <span className="font-mono font-bold text-purple-400 text-xs tracking-widest">URMI_MENU</span>
+                <div className="flex justify-end mb-8">
+                  <button onClick={() => setIsOpen(false)} className="p-2 text-white/70 hover:text-white">
+                    <X size={28} />
+                  </button>
                 </div>
           
-                {/* List-wise Navigation */}
-                <div className="flex flex-col gap-3 overflow-y-auto flex-grow pr-2 custom-scrollbar">
+                <div className="flex flex-col gap-2 overflow-y-auto">
                   {NAV_ITEMS.map((item) => (
                     <button
                       key={item}
                       onClick={() => scrollTo(item)}
-                      className={`w-full text-left px-6 py-4 rounded-2xl text-[15px] font-bold transition-all duration-300 flex items-center justify-between group ${
+                      className={`w-full text-left px-6 py-4 rounded-2xl text-lg font-semibold transition-all ${
                         active === item
-                          ? "text-purple-400 bg-purple-500/10 border-l-2 border-purple-500"
+                          ? "text-purple-400 bg-purple-500/10 border-r-4 border-purple-500 shadow-[0_0_20px_rgba(139,92,246,0.1)]"
                           : "text-gray-400 hover:text-white hover:bg-white/5"
                       }`}
                     >
-                      <span>{item}</span>
-                      <span className="text-[10px] opacity-0 group-hover:opacity-50 transition-opacity font-mono">/0{NAV_ITEMS.indexOf(item) + 1}</span>
+                      {item}
                     </button>
                   ))}
-                </div>
-
-                <div className="mt-auto pt-8 border-t border-white/5">
-                   <p className="text-[10px] font-mono text-gray-500 text-center uppercase tracking-widest">
-                     Ready to build the future
-                   </p>
                 </div>
               </motion.div>
             </div>
