@@ -11,6 +11,17 @@ export default {
   ],
   theme: {
     extend: {
+      // Added Keyframes for your attractive subtitle
+      keyframes: {
+        "gradient-x": {
+          "0%, 100%": { "background-position": "0% 50%" },
+          "50%": { "background-position": "100% 50%" },
+        },
+      },
+      // Added Animation for your attractive subtitle
+      animation: {
+        "gradient-x": "gradient-x 3s ease infinite",
+      },
       fontFamily: {
         mono: ['var(--font-mono)'],
         sans: ['var(--font-sans)'],

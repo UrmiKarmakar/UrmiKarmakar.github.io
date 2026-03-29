@@ -21,17 +21,14 @@ export default function Navbar() {
 
   const AI_AVATAR_URL = "/images/UK_AI.png"; 
 
-  // 1. Handle scroll effect for background glass styling
   useEffect(() => {
     const handleScroll = () => {
-      // Set scrolled true after 20px for a more immediate response
-      setScrolled(window.scrollY > 20);
+      setScrolled(window.scrollY > 10);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // 2. Sync active state with URL Hash
   useEffect(() => {
     const syncHash = () => {
       const hash = window.location.hash.replace("#", "");
@@ -44,7 +41,6 @@ export default function Navbar() {
     return () => window.removeEventListener("hashchange", syncHash);
   }, []);
 
-  // 3. Intersection Observer for real-time scroll highlighting
   useEffect(() => {
     const observerOptions = {
       root: null,
@@ -73,7 +69,6 @@ export default function Navbar() {
     return () => observer.disconnect();
   }, []);
 
-  // 4. Smooth Scroll function
   const scrollTo = (id) => {
     const element = document.getElementById(id) || document.getElementById(id.toLowerCase());
     
@@ -97,30 +92,28 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Detection trigger for hover - Reduced to avoid blocking content clicks */}
       <div 
-        className="fixed top-0 left-0 right-0 h-1 z-[45]" 
+        className="fixed top-0 left-0 right-0 h-1 z-[9999]" 
         onMouseEnter={() => setIsHovered(true)} 
       />
 
+      {/* FIXED POSITIONING: Added w-full and top-0 explicitly */}
       <nav 
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        // Fixed Logic: Removed -translate-y-2 to prevent it from disappearing
-        className={`fixed top-0 left-0 right-0 z-[10000] transition-all duration-300
+        className={`fixed top-0 left-0 w-full z-[10000] transition-all duration-300 pointer-events-auto
           ${(scrolled || isHovered) 
-            ? "bg-[#0f071a]/85 backdrop-blur-md border-b border-purple-500/20 shadow-lg py-2" 
-            : "bg-transparent py-4 border-b border-transparent"
+            ? "bg-[#0f071a]/90 backdrop-blur-xl border-b border-purple-500/20 shadow-2xl py-2" 
+            : "bg-transparent py-4"
           }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             
-            {/* Logo Section */}
             <motion.div
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
-              className="flex items-center gap-3 cursor-pointer group pointer-events-auto"
+              className="flex items-center gap-3 cursor-pointer group"
               onClick={() => scrollTo("Home")}
             >
               <div className="w-10 h-10 rounded-xl border border-purple-500/30 p-0.5 bg-black/40 overflow-hidden group-hover:border-purple-500 transition-colors">
@@ -137,13 +130,12 @@ export default function Navbar() {
               </div>
             </motion.div>
 
-            {/* Desktop Menu */}
-            <div className="hidden lg:flex items-center gap-1 bg-white/5 p-1 rounded-2xl border border-white/5 pointer-events-auto">
+            <div className="hidden lg:flex items-center gap-1 bg-white/5 p-1 rounded-2xl border border-white/5">
               {NAV_ITEMS.map((item) => (
                 <button
                   key={item}
                   onClick={() => scrollTo(item)}
-                  className={`relative px-4 py-2 rounded-xl text-[13px] font-medium transition-all duration-300 ${
+                  className={`relative px-4 py-2 rounded-xl text-[12px] font-medium transition-all duration-300 ${
                     active === item ? "text-white" : "text-gray-400 hover:text-white"
                   }`}
                 >
@@ -158,17 +150,15 @@ export default function Navbar() {
               ))}
             </div>
 
-            {/* Mobile Toggle Button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="lg:hidden p-2 text-gray-400 hover:text-white focus:outline-none pointer-events-auto"
+              className="lg:hidden p-2 text-gray-400 hover:text-white focus:outline-none"
             >
               {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Menu List */}
         <AnimatePresence>
           {isOpen && (
             <div className="fixed inset-0 z-[110] lg:hidden">
@@ -176,11 +166,11 @@ export default function Navbar() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="absolute inset-0 bg-black/90 backdrop-blur-sm" 
+                className="absolute inset-0 bg-black/95 backdrop-blur-md" 
                 onClick={() => setIsOpen(false)} 
               />
               <motion.div 
-                className="absolute right-0 top-0 bottom-0 w-[280px] bg-[#0f071a] border-l border-purple-500/20 p-6 flex flex-col"
+                className="absolute right-0 top-0 bottom-0 w-[260px] bg-[#0f071a] border-l border-purple-500/20 p-6 flex flex-col"
                 initial={{ x: "100%" }}
                 animate={{ x: 0 }}
                 exit={{ x: "100%" }}
@@ -192,14 +182,14 @@ export default function Navbar() {
                   </button>
                 </div>
           
-                <div className="flex flex-col gap-2 overflow-y-auto">
+                <div className="flex flex-col gap-1 overflow-y-auto pr-2 custom-scrollbar">
                   {NAV_ITEMS.map((item) => (
                     <button
                       key={item}
                       onClick={() => scrollTo(item)}
-                      className={`w-full text-left px-6 py-4 rounded-2xl text-lg font-semibold transition-all ${
+                      className={`w-full text-left px-5 py-3.5 rounded-xl text-md font-semibold transition-all ${
                         active === item
-                          ? "text-purple-400 bg-purple-500/10 border-r-4 border-purple-500 shadow-[0_0_20px_rgba(139,92,246,0.1)]"
+                          ? "text-purple-400 bg-purple-500/10 border-r-4 border-purple-500"
                           : "text-gray-400 hover:text-white hover:bg-white/5"
                       }`}
                     >

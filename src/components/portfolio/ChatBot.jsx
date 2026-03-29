@@ -15,12 +15,11 @@ export default function ChatBot() {
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [viewportHeight, setViewportHeight] = useState("auto"); // Fixed: Declared at top level
+  const [viewportHeight, setViewportHeight] = useState("auto");
   const messagesEndRef = useRef(null);
   
   const AVATAR_URL = "/images/UK_AI.png";
 
-  // Handle Mobile Keyboard / Viewport sizing
   useEffect(() => {
     if (!isOpen) return;
     const handleResize = () => {
@@ -78,9 +77,9 @@ export default function ChatBot() {
         .water-bg { position: relative; background-color: #0f071a; z-index: 1; }
         .water-bg::before {
           content: ""; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-          width: 220px; height: 220px; background-image: url(${AVATAR_URL});
+          width: 180px; height: 180px; background-image: url(${AVATAR_URL});
           background-size: contain; background-position: center; background-repeat: no-repeat;
-          opacity: 0.25; z-index: -1; pointer-events: none;
+          opacity: 0.15; z-index: -1; pointer-events: none;
         }
       `}</style>
       
@@ -91,39 +90,39 @@ export default function ChatBot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             style={{ height: viewportHeight }}
-            // Fixed height and max-width to prevent the "Too Long/Full Screen" issue
-            className="pointer-events-auto mb-2 md:mb-4 w-full md:w-[380px] md:h-[550px] max-h-[85vh] overflow-hidden rounded-[2rem] border border-purple-500/30 shadow-2xl flex flex-col water-bg backdrop-blur-lg"
+            className="pointer-events-auto mb-2 md:mb-4 w-full md:w-[350px] md:h-[420px] max-h-[80vh] overflow-hidden rounded-[1.5rem] border border-purple-500/30 shadow-2xl flex flex-col water-bg backdrop-blur-lg"
           >
             {/* Header */}
-            <div className="p-4 border-b border-purple-500/20 bg-purple-950/40 backdrop-blur-md flex items-center justify-between shrink-0">
+            <div className="p-3 border-b border-purple-500/20 bg-purple-950/40 backdrop-blur-md flex items-center justify-between shrink-0">
               <div className="flex items-center gap-3">
-                <div className="relative w-10 h-10 rounded-xl border-2 border-purple-400/40 p-0.5 bg-black/40 overflow-hidden">
-                  <img src={AVATAR_URL} className="w-full h-full object-cover scale-125" alt="Urmi AI" />
+                <div className="relative w-10 h-10 rounded-full border border-purple-400/40 p-0.5 bg-black/40">
+                  <img src={AVATAR_URL} className="w-full h-full object-cover rounded-full scale-110" alt="Urmi AI" />
+                  {/* Green dot 1: Top Right of Header Icon */}
+                  <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-[#0f071a] animate-pulse shadow-[0_0_8px_#22c55e]"></span>
                 </div>
                 <div className="flex flex-col text-left">
                   <h3 className="text-white font-bold text-sm tracking-tight leading-tight">Urmi_AI</h3>
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    {/* Fixed: Restored Green Dot Indicator */}
-                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
-                    <span className="text-[10px] text-purple-300 font-black uppercase tracking-widest">Online</span>
-                  </div>
+                  {/* Enhanced Subtitle with Gradient Animation */}
+                  <span className="text-[9px] font-black uppercase tracking-[0.1em] bg-gradient-to-r from-green-400 via-purple-300 to-blue-400 bg-clip-text text-transparent animate-gradient-x">
+                    Urmi’s Digital Shadow
+                  </span>
                 </div>
               </div>
-              <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="text-white/60 hover:text-white">
-                <X size={20} />
+              <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="text-white/60 hover:text-white hover:bg-white/5 h-8 w-8">
+                <X size={18} />
               </Button>
             </div>
 
             {/* Chat Body */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
               {messages.map((msg, i) => (
-                <div key={i} className={`flex items-start gap-2.5 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}>
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border ${
+                <div key={i} className={`flex items-start gap-2 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}>
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 border ${
                     msg.role === "user" ? "bg-purple-600/30 border-purple-400/40" : "bg-black/60 border-purple-500/40 overflow-hidden"
                   }`}>
-                    {msg.role === "user" ? <User size={14} className="text-purple-200" /> : <img src={AVATAR_URL} className="w-full h-full object-cover scale-125" />}
+                    {msg.role === "user" ? <User size={12} className="text-purple-200" /> : <img src={AVATAR_URL} className="w-full h-full object-cover scale-110" />}
                   </div>
-                  <div className={`max-w-[80%] p-3 rounded-2xl text-[13px] leading-relaxed ${
+                  <div className={`max-w-[85%] p-2.5 rounded-xl text-[12px] leading-relaxed ${
                     msg.role === "user" ? "bg-purple-600 text-white rounded-tr-none" : "bg-black/70 text-purple-50 border border-purple-500/10 rounded-tl-none shadow-sm"
                   }`}>
                     <ReactMarkdown className="prose prose-invert prose-sm">{msg.content}</ReactMarkdown>
@@ -131,24 +130,24 @@ export default function ChatBot() {
                 </div>
               ))}
               {loading && (
-                <div className="flex gap-2 items-center text-purple-300 text-[10px] pl-10 animate-pulse font-mono uppercase">
-                  <span>Thinking...</span>
+                <div className="flex gap-2 items-center text-purple-300 text-[10px] pl-9 animate-pulse font-mono uppercase italic">
+                  <span>Processing...</span>
                 </div>
               )}
               <div ref={messagesEndRef} />
             </div>
 
             {/* Input */}
-            <form onSubmit={sendMessage} className="p-4 bg-purple-950/40 border-t border-purple-500/10 flex gap-2 shrink-0">
+            <form onSubmit={sendMessage} className="p-3 bg-purple-950/40 border-t border-purple-500/10 flex gap-2 shrink-0">
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Message Urmi_AI..."
-                className="bg-black/40 border-purple-500/20 text-white rounded-xl h-11 focus:border-purple-500/50"
+                placeholder="Talk to me..."
+                className="bg-black/40 border-purple-500/20 text-white rounded-lg h-9 text-xs focus:border-purple-500/50"
                 disabled={loading}
               />
-              <Button type="submit" disabled={!input.trim() || loading} className="bg-purple-600 hover:bg-purple-500 px-4 h-11 transition-transform active:scale-95 shadow-lg shadow-purple-600/20">
-                <Send size={18} />
+              <Button type="submit" disabled={!input.trim() || loading} className="bg-purple-600 hover:bg-purple-500 px-3 h-9 transition-transform active:scale-95">
+                <Send size={14} />
               </Button>
             </form>
           </motion.div>
@@ -159,11 +158,14 @@ export default function ChatBot() {
         <motion.button
           layoutId="chat-toggle"
           onClick={() => setIsOpen(true)}
-          className="pointer-events-auto w-16 h-16 rounded-2xl overflow-hidden shadow-2xl border-2 border-purple-500/40 bg-[#0f071a]"
+          // Standardized size for the button bubble
+          className="relative pointer-events-auto w-14 h-14 rounded-full shadow-2xl border-2 border-purple-500/40 bg-[#0f071a]"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          <img src={AVATAR_URL} className="w-full h-full object-cover scale-125 opacity-90" />
+          <img src={AVATAR_URL} className="w-full h-full object-cover rounded-full scale-110 opacity-90" />
+          {/* Green dot 2: Top Right of Floating Button */}
+          <span className="absolute top-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-[#0f071a] animate-pulse shadow-[0_0_10px_#22c55e]"></span>
         </motion.button>
       )}
     </div>
