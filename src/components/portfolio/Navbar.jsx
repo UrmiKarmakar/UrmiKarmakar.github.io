@@ -43,7 +43,7 @@ export default function Navbar() {
     return () => window.removeEventListener("hashchange", syncHash);
   }, []);
 
-  // 3. Update active state based on section visibility (Intersection Observer)
+  // 3. Update active state based on section visibility
   useEffect(() => {
     const observerOptions = {
       root: null,
@@ -72,7 +72,7 @@ export default function Navbar() {
     return () => observer.disconnect();
   }, []);
 
-  // 4. Smooth scroll function
+  // 4. Smooth scroll function with corrected offset
   const scrollTo = (id) => {
     const element = document.getElementById(id) || document.getElementById(id.toLowerCase());
     
@@ -81,7 +81,8 @@ export default function Navbar() {
       setIsOpen(false); 
       setIsHovered(false);
 
-      const offset = 80; 
+      // Increased offset to prevent the fixed navbar from covering section titles
+      const offset = 100; 
       const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
       const offsetPosition = elementPosition - offset;
 
@@ -105,7 +106,6 @@ export default function Navbar() {
       <nav 
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        // Forced inline styles to override any potential CSS conflicts
         style={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 10000 }}
         className={`transition-all duration-300 pointer-events-auto
           ${(scrolled || isHovered) 
@@ -116,7 +116,7 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             
-            {/* Logo and Dev Name */}
+            {/* Logo and Dev Name - Now always visible on mobile */}
             <motion.div
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
@@ -158,70 +158,69 @@ export default function Navbar() {
               ))}
             </div>
 
-            {/* Mobile Menu Toggle - Keep this one! */}
+            {/* Mobile Menu Toggle - Master controller */}
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="lg:hidden p-2 text-gray-400 hover:text-white focus:outline-none z-[10002]"
             >
-              {/* Add a conditional class to the X icon so it turns purple when open */}
               {isOpen ? <X className="w-6 h-6 text-purple-400" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
 
         {/* Mobile Navigation Sidebar */}
-          <AnimatePresence>
-            {isOpen && (
-              <div className="fixed inset-0 z-[10001] lg:hidden">
-                {/* Backdrop - Increased opacity to 95% to fully hide the "crashing" background items */}
-                <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="absolute inset-0 bg-black/95 backdrop-blur-xl" 
-                  onClick={() => setIsOpen(false)} 
-                />
+        <AnimatePresence>
+          {isOpen && (
+            <div className="fixed inset-0 z-[10001] lg:hidden">
+              {/* Backdrop */}
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 bg-black/95 backdrop-blur-xl" 
+                onClick={() => setIsOpen(false)} 
+              />
 
-                {/* Sidebar - Uses 100dvh to prevent mobile browser cropping */}
-                <motion.div 
-                  className="absolute right-0 top-0 h-[100dvh] w-[280px] bg-[#0f071a] border-l border-purple-500/20 p-6 flex flex-col shadow-2xl"
-                  initial={{ x: "100%" }}
-                  animate={{ x: 0 }}
-                  exit={{ x: "100%" }}
-                  transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                >
-                  <div className="flex justify-between items-center mb-10">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
-                      <span className="font-mono font-bold text-purple-400 text-xs tracking-widest">MENU</span>
-                    </div>
+              {/* Sidebar */}
+              <motion.div 
+                className="absolute right-0 top-0 h-[100dvh] w-[280px] bg-[#0f071a] border-l border-purple-500/20 p-6 flex flex-col shadow-2xl"
+                initial={{ x: "100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "100%" }}
+                transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              >
+                <div className="flex justify-between items-center mb-10">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
+                    <span className="font-mono font-bold text-purple-400 text-xs tracking-widest">MENU</span>
                   </div>
+                  {/* Extra X button removed from here to prevent duplicate icons */}
+                </div>
             
-                  {/* Scrollable Items Area */}
-                  <div className="flex flex-col gap-2 overflow-y-auto flex-grow pr-2 custom-scrollbar pb-20">
-                    {NAV_ITEMS.map((item) => (
-                      <button
-                        key={item}
-                        onClick={() => scrollTo(item)}
-                        className={`w-full text-left px-6 py-4 rounded-xl text-sm font-bold transition-all duration-300 ${
-                          active === item
-                            ? "text-purple-400 bg-purple-500/10 border-l-2 border-purple-500"
-                            : "text-gray-400 hover:text-white hover:bg-white/5"
-                        }`}
-                      >
-                        {item}
-                      </button>
-                    ))}
-                  </div>
-                  
-                  {/* Optional: Footer inside sidebar to keep it grounded */}
-                  <div className="pt-6 border-t border-white/5 text-center">
-                       <span className="text-[10px] font-mono text-gray-500">urmi@portfolio v2.0</span>
-                  </div>
-                </motion.div>
-              </div>
-            )}
-          </AnimatePresence>
+                {/* Scrollable Items Area */}
+                <div className="flex flex-col gap-2 overflow-y-auto flex-grow pr-2 custom-scrollbar pb-20">
+                  {NAV_ITEMS.map((item) => (
+                    <button
+                      key={item}
+                      onClick={() => scrollTo(item)}
+                      className={`w-full text-left px-6 py-4 rounded-xl text-sm font-bold transition-all duration-300 ${
+                        active === item
+                          ? "text-purple-400 bg-purple-500/10 border-l-2 border-purple-500"
+                          : "text-gray-400 hover:text-white hover:bg-white/5"
+                      }`}
+                    >
+                      {item}
+                    </button>
+                  ))}
+                </div>
+                
+                <div className="pt-6 border-t border-white/5 text-center">
+                   <span className="text-[10px] font-mono text-gray-500">urmi@portfolio v2.0</span>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
       </nav>
     </>
   );
