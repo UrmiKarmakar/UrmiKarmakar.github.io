@@ -11,16 +11,14 @@ import PageNotFound from './lib/PageNotFound';
 
 // Components
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
-import ChatBot from '@/components/portfolio/ChatBot'; // Import ChatBot
+import ChatBot from '@/components/portfolio/ChatBot'; 
+import Navbar from '@/components/portfolio/Navbar';
 
 // Destructure pages configuration
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
 const MainPage = Pages[mainPageKey] || (() => <></>);
 
-/**
- * LayoutWrapper provides a consistent structure around pages
- */
 const LayoutWrapper = ({ children, currentPageName }) => {
   return Layout ? (
     <Layout currentPageName={currentPageName}>{children}</Layout>
@@ -29,13 +27,9 @@ const LayoutWrapper = ({ children, currentPageName }) => {
   );
 };
 
-/**
- * AuthenticatedApp handles the Auth logic, Routing, and Global Components.
- */
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
-  // 1. Loading State
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-background">
@@ -44,62 +38,53 @@ const AuthenticatedApp = () => {
     );
   }
 
-  // 2. Auth Error Handling
   if (authError) {
-    if (authError.type === 'user_not_registered') {
-      return <UserNotRegisteredError />;
-    } else if (authError.type === 'auth_required') {
-      navigateToLogin();
-      return null;
-    }
+    if (authError.type === 'user_not_registered') return <UserNotRegisteredError />;
+    if (authError.type === 'auth_required') { navigateToLogin(); return null; }
   }
 
-  // 3. Main Rendering
   return (
     <Suspense fallback={
       <div className="h-screen w-full flex items-center justify-center bg-background animate-pulse">
         <div className="h-24 w-24 rounded-full bg-primary/10 glow-purple-sm" />
       </div>
     }>
-      {/* 🚀 CHATBOT PLACEMENT: Inside Suspense, outside Routes */}
+      {/* GLOBAL COMPONENTS: These stay on top of all pages */}
+      <Navbar /> 
       <ChatBot />
 
-      <Routes>
-        {/* Main Entry Page */}
-        <Route 
-          path="/" 
-          element={
-            <LayoutWrapper currentPageName={mainPageKey}>
-              <MainPage />
-            </LayoutWrapper>
-          } 
-        />
-
-        {/* Dynamic Pages */}
-        {Object.entries(Pages).map(([path, Page]) => (
-          <Route
-            key={path}
-            path={`/${path}`}
+      {/* MAIN CONTENT: Wrapped in ID for better layout control */}
+      <main id="main-content-area">
+        <Routes>
+          <Route 
+            path="/" 
             element={
-              <LayoutWrapper currentPageName={path}>
-                <Page />
+              <LayoutWrapper currentPageName={mainPageKey}>
+                <MainPage />
               </LayoutWrapper>
-            }
+            } 
           />
-        ))}
 
-        {/* Catch-all 404 */}
-        <Route path="*" element={<PageNotFound />} />
-      </Routes>
+          {Object.entries(Pages).map(([path, Page]) => (
+            <Route
+              key={path}
+              path={`/${path}`}
+              element={
+                <LayoutWrapper currentPageName={path}>
+                  <Page />
+                </LayoutWrapper>
+              }
+            />
+          ))}
+
+          <Route path="*" element={<PageNotFound />} />
+        </Routes>
+      </main>
     </Suspense>
   );
 };
 
-/**
- * Root App Component
- */
 function App() {
-  // Wake up Render Backend
   useEffect(() => {
     const wakeUpServer = async () => {
       try {
