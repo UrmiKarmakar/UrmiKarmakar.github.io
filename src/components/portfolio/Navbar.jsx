@@ -89,7 +89,7 @@ export default function Navbar() {
     }
   };
 
-  return (
+return (
     <>
       <nav 
         className={`fixed top-0 left-0 right-0 z-[50] transition-all duration-300 ${
@@ -98,10 +98,11 @@ export default function Navbar() {
             : "bg-[#0f071a]/40 backdrop-blur-sm py-4 border-b border-transparent"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* CHANGED: max-w-7xl -> max-w-full and px-4 -> px-6 to px-12 */}
+        <div className="w-full max-w-full mx-auto px-6 md:px-12">
           <div className="flex items-center justify-between h-16">
             
-            {/* Logo */}
+            {/* Logo Section */}
             <div
               className="flex items-center gap-3 cursor-pointer group"
               onClick={() => scrollTo("Home")}

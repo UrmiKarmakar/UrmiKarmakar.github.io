@@ -54,7 +54,7 @@ const AuthenticatedApp = () => {
       <ChatBot />
 
       {/* MAIN CONTENT: Wrapped in ID for better layout control */}
-      <main id="main-content-area">
+      <main id="main-content-area" className="relative min-h-screen w-full pt-20 overflow-x-hidden flex flex-col">
         <Routes>
           <Route 
             path="/" 

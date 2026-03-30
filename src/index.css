@@ -55,12 +55,23 @@
   }
 
   /* --- ADDED FOR NAVIGATION & MOBILE FLOW --- */
-  html, body {
+  html {
     scroll-behavior: smooth !important;
-    max-width: 100%;
-    overflow-x: hidden; /* Fixes "out of frame" issues */
+    height: 100%; /* Base height */
+  }
+
+  body {
+    min-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto; /* Explicitly allow vertical scrolling */
     position: relative;
-    touch-action: manipulation; /* Faster response to taps */
+    -webkit-overflow-scrolling: touch; /* Smooth momentum scroll for iOS */
+  }
+
+  #root {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
   }
 }
 
