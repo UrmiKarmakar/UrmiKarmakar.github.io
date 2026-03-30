@@ -43,18 +43,23 @@ const AuthenticatedApp = () => {
     if (authError.type === 'auth_required') { navigateToLogin(); return null; }
   }
 
-  return (
+return (
     <Suspense fallback={
-      <div className="h-screen w-full flex items-center justify-center bg-background animate-pulse">
-        <div className="h-24 w-24 rounded-full bg-primary/10 glow-purple-sm" />
+      <div className="h-screen w-full flex items-center justify-center bg-[#0f071a]">
+        <div className="h-24 w-24 rounded-full bg-purple-500/10 animate-pulse" />
       </div>
     }>
-      {/* GLOBAL COMPONENTS: These stay on top of all pages */}
+      {/* Navbar stays fixed at the top */}
       <Navbar /> 
+      
+      {/* ChatBot stays fixed at the bottom */}
       <ChatBot />
 
-      {/* MAIN CONTENT: Wrapped in ID for better layout control */}
-      <main id="main-content-area">
+      {/* FIXED: Removed 'overflow-hidden' from any parent containers.
+          Added min-h-screen to ensure the page has enough height to scroll.
+          Added overflow-x-hidden to prevent horizontal shaking.
+      */}
+      <main id="main-content-area" className="relative min-h-screen w-full overflow-x-hidden pt-20"> 
         <Routes>
           <Route 
             path="/" 
@@ -64,7 +69,6 @@ const AuthenticatedApp = () => {
               </LayoutWrapper>
             } 
           />
-
           {Object.entries(Pages).map(([path, Page]) => (
             <Route
               key={path}
@@ -76,7 +80,6 @@ const AuthenticatedApp = () => {
               }
             />
           ))}
-
           <Route path="*" element={<PageNotFound />} />
         </Routes>
       </main>
