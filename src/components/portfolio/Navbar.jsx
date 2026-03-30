@@ -89,67 +89,65 @@ export default function Navbar() {
     }
   };
 
-return (
+  return (
     <>
       <nav 
-        /* FIXED: Added 'flex justify-center' and removed 'right-0' to keep it centered and compact */
-        className={`fixed top-4 left-0 right-0 z-[50] flex justify-center transition-all duration-300 pointer-events-none px-4`}
+        className={`fixed top-0 left-0 right-0 z-[50] transition-all duration-300 ${
+          scrolled 
+            ? "bg-[#0f071a]/90 backdrop-blur-md border-b border-purple-500/20 shadow-lg py-2" 
+            : "bg-[#0f071a]/40 backdrop-blur-sm py-4 border-b border-transparent"
+        }`}
       >
-        <div className={`
-          /* FIXED: Changed from max-w-7xl to max-w-fit for the 'pill' look */
-          max-w-fit mx-auto px-4 sm:px-6 flex items-center gap-8 h-14 
-          pointer-events-auto rounded-2xl border transition-all duration-300
-          ${scrolled 
-            ? "bg-[#0f071a]/90 backdrop-blur-md border-purple-500/30 shadow-[0_0_20px_rgba(0,0,0,0.5)]" 
-            : "bg-[#0f071a]/40 backdrop-blur-sm border-white/5"
-          }
-        `}>
-          
-          {/* Logo Section */}
-          <div
-            className="flex items-center gap-3 cursor-pointer group shrink-0"
-            onClick={() => scrollTo("Home")}
-          >
-            <div className="w-8 h-8 rounded-lg border border-purple-500/30 p-0.5 bg-black/40 overflow-hidden group-hover:border-purple-500 transition-colors">
-              <img 
-                src={AI_AVATAR_URL} 
-                alt="Logo" 
-                className="object-cover w-full h-full scale-125" 
-              />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            
+            {/* Logo */}
+            <div
+              className="flex items-center gap-3 cursor-pointer group"
+              onClick={() => scrollTo("Home")}
+            >
+              <div className="w-10 h-10 rounded-xl border border-purple-500/30 p-0.5 bg-black/40 overflow-hidden group-hover:border-purple-500 transition-colors">
+                <img 
+                  src={AI_AVATAR_URL} 
+                  alt="Logo" 
+                  className="object-cover w-full h-full scale-125" 
+                />
+              </div>
+              <div className="hidden sm:block">
+                <span className="font-mono font-bold text-sm text-purple-400">urmi@dev</span>
+                <span className="text-gray-400 font-mono text-sm">:~$</span>
+              </div>
             </div>
-            <div className="hidden sm:block">
-              <span className="font-mono font-bold text-xs text-purple-400">urmi@dev</span>
+
+            {/* Desktop Menu */}
+            <div className="hidden lg:flex items-center gap-1 bg-white/5 p-1 rounded-2xl border border-white/5">
+              {NAV_ITEMS.map((item) => (
+                <button
+                  key={item}
+                  onClick={() => scrollTo(item)}
+                  className={`relative px-4 py-2 rounded-xl text-[13px] font-medium transition-all duration-300 ${
+                    active === item ? "text-white" : "text-gray-400 hover:text-white"
+                  }`}
+                >
+                  {active === item && (
+                    <motion.div 
+                      layoutId="activeGlow"
+                      className="absolute inset-0 bg-purple-600/20 rounded-xl border border-purple-500/30 shadow-[0_0_15px_rgba(139,92,246,0.2)]"
+                    />
+                  )}
+                  <span className="relative z-10">{item}</span>
+                </button>
+              ))}
             </div>
-          </div>
 
-          {/* Desktop Menu - Compact gap and smaller font */}
-          <div className="hidden lg:flex items-center gap-1">
-            {NAV_ITEMS.slice(0, 5).map((item) => ( // Showing first 5 to keep it tight
-              <button
-                key={item}
-                onClick={() => scrollTo(item)}
-                className={`relative px-3 py-1.5 rounded-xl text-[12px] font-medium transition-all duration-300 ${
-                  active === item ? "text-white" : "text-gray-400 hover:text-white"
-                }`}
-              >
-                {active === item && (
-                  <motion.div 
-                    layoutId="activeGlow"
-                    className="absolute inset-0 bg-purple-600/20 rounded-xl border border-purple-500/30"
-                  />
-                )}
-                <span className="relative z-10">{item}</span>
-              </button>
-            ))}
+            {/* Mobile Toggle */}
+            <button
+              onClick={() => setIsOpen(true)}
+              className="lg:hidden p-2 text-gray-400 hover:text-white"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
           </div>
-
-          {/* Mobile Toggle / More Menu */}
-          <button
-            onClick={() => setIsOpen(true)}
-            className="p-2 text-gray-400 hover:text-white transition-colors"
-          >
-            <Menu className="w-5 h-5" />
-          </button>
         </div>
       </nav>
 
