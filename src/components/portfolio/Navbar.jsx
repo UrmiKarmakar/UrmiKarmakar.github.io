@@ -98,11 +98,11 @@ return (
             : "bg-[#0f071a]/40 backdrop-blur-sm py-4 border-b border-transparent"
         }`}
       >
-        {/* CHANGED: max-w-7xl -> max-w-full and px-4 -> px-6 to px-12 */}
-        <div className="w-full max-w-full mx-auto px-6 md:px-12">
+        {/* Changed back to max-w-7xl to fix the middle gap and alignment */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             
-            {/* Logo Section */}
+            {/* Logo */}
             <div
               className="flex items-center gap-3 cursor-pointer group"
               onClick={() => scrollTo("Home")}
@@ -114,13 +114,13 @@ return (
                   className="object-cover w-full h-full scale-125" 
                 />
               </div>
-              <div className="hidden sm:block">
+              <div className="block">
                 <span className="font-mono font-bold text-sm text-purple-400">urmi@dev</span>
                 <span className="text-gray-400 font-mono text-sm">:~$</span>
               </div>
             </div>
 
-            {/* Desktop Menu */}
+            {/* Desktop Menu - Keeps it centered/right as before */}
             <div className="hidden lg:flex items-center gap-1 bg-white/5 p-1 rounded-2xl border border-white/5">
               {NAV_ITEMS.map((item) => (
                 <button
