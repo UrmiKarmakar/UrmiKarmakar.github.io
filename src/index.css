@@ -57,21 +57,18 @@
   /* --- ADDED FOR NAVIGATION & MOBILE FLOW --- */
   html {
     scroll-behavior: smooth !important;
-    height: auto 
+    height: auto !important; /* Allow the page to grow */
   }
-
+  
   body {
     margin: 0;
     padding: 0;
     min-height: 100vh;
-    background-color: hsl(230, 25%, 7%);
-    color: hsl(270, 20%, 95%);
-    /* Ensure scrolling is allowed */
-    overflow-y: auto !important; 
+    overflow-y: auto !important; /* Force scrolling to stay ON */
     overflow-x: hidden;
     position: relative;
   }
-  
+
   #root {
     display: flex;
     flex-direction: column;
@@ -208,12 +205,6 @@ body.modal-open #main-content-area {
 [role="dialog"] video {
   filter: none !important;
   backdrop-filter: none !important;
-}
-
-/* Prevents the body from scrolling while keeping the layout stable */
-html, body {
-  height: -webkit-fill-available;
-  overflow-x: hidden;
 }
 
 /* Forces the container to respect the visual viewport (where the keyboard is) */
