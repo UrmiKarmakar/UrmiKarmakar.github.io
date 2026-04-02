@@ -1,16 +1,10 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
-
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  // This ensures assets link correctly on local AND github.io
-  base: './', 
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
+  base: '/', 
+  build: {
+    outDir: 'docs', // This tells Vite to put the build in 'docs'
   },
-  logLevel: 'info', 
+  resolve: {
+    alias: { "@": path.resolve(__dirname, "./src") },
+  },
 })
