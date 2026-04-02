@@ -28,7 +28,8 @@ app.add_middleware(
 )
 
 # 3. Configure Gemini AI
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=api_key) if api_key else None
 
 class ChatRequest(BaseModel):
     message: str
@@ -84,8 +85,8 @@ Instructions:
 
 @app.post("/chat")
 async def chat_endpoint(request: ChatRequest):
-    if not os.getenv("OPENAI_API_KEY"):
-        return {"response": "API key missing! ✨"}
+    if not client:
+        return {"response": "I'm having trouble connecting to my brain (API Key missing)! ✨"}
 
     if request.message.lower() == "ping":
         return {"response": "Backend server is awake and ready! 🚀"}
