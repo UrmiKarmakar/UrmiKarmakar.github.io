@@ -1,5 +1,6 @@
 import os
-import google.generativeai as genai
+from openai import OpenAI
+#import google.generativeai as genai
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -27,9 +28,7 @@ app.add_middleware(
 )
 
 # 3. Configure Gemini AI
-api_key = os.getenv("GEMINI_API_KEY")
-if api_key:
-    genai.configure(api_key=api_key)
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 class ChatRequest(BaseModel):
     message: str
@@ -85,34 +84,34 @@ Instructions:
 
 @app.post("/chat")
 async def chat_endpoint(request: ChatRequest):
-    if not api_key:
+    if not os.getenv("OPENAI_API_KEY"):
         return {"response": "API key missing! ✨"}
 
+    if request.message.lower() == "ping":
+        return {"response": "Backend server is awake and ready! 🚀"}
+
     try:
-        # Using the model that works in your local environment
-        model = genai.GenerativeModel("models/gemini-2.5-flash")
-        
-        full_prompt = f"{URMI_CONTEXT}\nUser: {request.message}\nUrmi_AI:"
-        
-        # Generation config for natural flow
-        response = model.generate_content(
-            full_prompt,
-            generation_config=genai.types.GenerationConfig(
-                max_output_tokens=300, # Enough room for a full conversation
-                temperature=0.85,      # Higher for more creative/natural replies
-            )
+        # 5. Updated for OpenAI Chat Completion
+        response = client.chat.completions.create(
+            model="gpt-4o-mini", # Highly recommended: cheap, fast, and smart
+            messages=[
+                {"role": "system", "content": URMI_CONTEXT},
+                {"role": "user", "content": request.message}
+            ],
+            max_tokens=300,
+            temperature=0.85
         )
         
-        if not response or not hasattr(response, 'text') or not response.text:
-            return {"response": "I'm feeling a bit shy right now! Let's talk about tech instead. 💖"}
-
-        return {"response": response.text.strip()}
+        # Extract the text response
+        bot_message = response.choices[0].message.content
+        return {"response": bot_message.strip()}
         
     except Exception as e:
         err_msg = str(e)
-        print(f" ERROR: {err_msg}")
-        if "429" in err_msg or "quota" in err_msg.lower():
-            return {"response": "Oops! I've been chatting a bit too much. ✨ Give me a minute to recharge! 🌈"}
+        print(f"ERROR: {err_msg}")
+        # Specific error handling for OpenAI Quota/Billing
+        if "insufficient_quota" in err_msg:
+            return {"response": "Oops! My brain is on a budget right now. ✨ Give me a moment! 🌈"}
         return {"response": "My circuits are flickering! Can you try that again? ✨"}
     
 if __name__ == "__main__":
